@@ -42,8 +42,9 @@ const Header = () => {
 
     return (
         <div className='w-[100%] h-[48px] bg-white mb-1'>
-            <div className='h-full flex items-center px-[24px]'>
-                <Space className='flex mt-0 ml-auto'>
+            <div className='h-full flex items-center justify-between'>
+                <div></div>
+                <Space>
                     <Segmented
                         size='small'
                         options={screenOptions.map((s) => {
@@ -65,7 +66,7 @@ const Header = () => {
                         }}
                     />
                 </Space>
-                <Space className='flex ml-auto mr-0'>
+                <Space>
                     <Popconfirm
                         title='确认清空画布吗？'
                         okText='确认'
