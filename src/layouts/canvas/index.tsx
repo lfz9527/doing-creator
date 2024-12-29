@@ -13,7 +13,7 @@ const Canvas = () => {
     }, [setCanvasRef])
 
     return (
-        <div className='w-full h-full p-[12px] flex justify-center content-center overflow-hidden'>
+        <div className='w-full h-full pt-[8px] px-[12px] pb-[12px] flex justify-center content-center overflow-hidden'>
             <div
                 id={CANVAS_ID}
                 ref={canvasRef}

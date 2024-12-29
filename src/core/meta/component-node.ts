@@ -18,6 +18,10 @@ export type ComponentNode = {
      */
     description?: string
     /**
+     * 是否锁定
+     */
+    isLock?: boolean
+    /**
      * 组件类型
      */
     type: ComponentType
