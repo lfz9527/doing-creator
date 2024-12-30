@@ -66,7 +66,7 @@ const Header = () => {
                         }}
                     />
                 </Space>
-                <Space>
+                <Space className='pr-[12px]'>
                     <Popconfirm
                         title='确认清空画布吗？'
                         okText='确认'

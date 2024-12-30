@@ -10,22 +10,16 @@ interface Props {
 
 const useDrop = (props: Props) => {
     const {id, name, path} = props
-
-    console.log('getAcceptDrop(name)',name,getAcceptDrop(name));
-    
-
     const [{canDrop, isOverCurrent, isOver}, drop] = useDndDrop(
         {
             accept: getAcceptDrop(name),
             drop: (_: any, monitor) => {
                 const didDrop = monitor.didDrop()
-                console.log('didDrop',didDrop);
-                
                 if (didDrop) {
                     return
                 }
 
-                // 这里把当前组件的id返回出去，在拖拽结束事件里可以拿到这个id。
+                // 拖拽结束事件里可以获取到拖拽的数据
                 return {
                     id,
                     path

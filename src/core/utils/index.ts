@@ -5,7 +5,11 @@ import {useMaterial} from '@/store'
  * @param componentName 组件名
  * @returns
  */
-export const getAcceptDrop = (name:string) =>{
-  const {materialMapConfig} = useMaterial.getState()
-  return materialMapConfig.get(name)?.allowDrag || []
+export const getAcceptDrop = (name: string) => {
+    const {materialMapConfig} = useMaterial.getState()
+    return (
+        Array.from(materialMapConfig.values())
+            .filter((c) => c.allowDrag?.includes(name))
+            .map((o) => o.name) || []
+    )
 }

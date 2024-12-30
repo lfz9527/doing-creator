@@ -1,13 +1,30 @@
-import {FC} from 'react'
+import {FC, useEffect} from 'react'
+import {useDrop} from '@/hooks'
+
 type Props = {
     name: string
-    id:string
+    id: string
     children?: React.ReactNode
-    [key:string]: any
+    [key: string]: any
 }
 
 const Text: FC<Props> = (props) => {
-    const {children} = props
-    return <div  style={{minHeight: 300}}>{children}</div>
+    const {children, id, name} = props
+
+    const {drop,canDrop} = useDrop({
+        id,
+        name,
+        path: ''
+    })
+
+    useEffect(() => {
+        console.log(canDrop)
+    }, [canDrop])
+
+    return (
+        <div ref={drop} style={{minHeight: 300}}>
+            {children}
+        </div>
+    )
 }
 export default Text
