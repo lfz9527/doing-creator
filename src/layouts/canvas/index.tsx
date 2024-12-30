@@ -1,9 +1,26 @@
 import {CANVAS_ID} from '@/enum'
-import {useEffect, useRef} from 'react'
+import {DesignCanvas} from '@core/canvas'
+import {useEffect, useRef,useState} from 'react'
 import {useCanvas} from '@/store'
 
 const Canvas = () => {
     const {setCanvasRef} = useCanvas()
+    const [componentNodeSchema] = useState(
+        {
+            name: 'Page',
+            id: 2,
+            children: [
+                {
+                    name: 'Text',
+                    id: 3,
+                    props: {
+                        value: 'Hello World',
+                        
+                    }
+                }
+            ]
+        },
+    )
 
     const canvasRef = useRef<HTMLDivElement>(null)
     useEffect(() => {
@@ -17,9 +34,9 @@ const Canvas = () => {
             <div
                 id={CANVAS_ID}
                 ref={canvasRef}
-                className=' h-full w-full overflow-auto bg-white'
+                className='w-full h-full overflow-auto bg-white '
             >
-                <h1>Canvas</h1>
+                <DesignCanvas componentNode={componentNodeSchema} />
             </div>
         </div>
     )

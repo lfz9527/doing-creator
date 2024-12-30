@@ -10,6 +10,10 @@ import {
 
 export type ComponentNodeDesignWrapperProps = {
     /**
+     * 节点id
+     */
+    id: string
+    /**
      * 标识节点的路径
      */
     nodePath: string
@@ -26,10 +30,15 @@ export type ComponentNodeDesignWrapperProps = {
 export const ComponentNodeDesignWrapper: FC<
     PropsWithChildren<ComponentNodeDesignWrapperProps>
 > = (props) => {
-    const {nodePath, isSelected = false, children, onClick = () => {}} = props
+    const {
+        id,
+        nodePath,
+        isSelected = false,
+        children,
+        onClick = () => {}
+    } = props
 
     const ref = useRef<HTMLDivElement | null>(null)
-
     const [targetNodeHtmlType, setTargetNodeHtmlType] = useState<string>()
 
     useEffect(() => {
@@ -62,6 +71,7 @@ export const ComponentNodeDesignWrapper: FC<
             key={nodePath + '_wrapper_key'}
             style={style}
             ref={ref}
+            component-id={id}
             onClick={(event) => {
                 event.stopPropagation()
                 onClick()

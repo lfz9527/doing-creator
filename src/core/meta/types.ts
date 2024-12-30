@@ -17,6 +17,6 @@ export type baseComponentNodePropType = string | number
 /**
  * 组件节点每一个属性的类型
  */
-export type ComponentNodePropType = baseComponentNodePropType & {
+export type ComponentNodePropType = baseComponentNodePropType | {
     [key: string]: string | number
 }

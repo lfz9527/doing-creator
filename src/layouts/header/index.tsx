@@ -42,7 +42,7 @@ const Header = () => {
 
     return (
         <div className='w-[100%] h-[48px] bg-white mb-1'>
-            <div className='h-full flex items-center justify-between'>
+            <div className='flex items-center justify-between h-full'>
                 <div></div>
                 <Space>
                     <Segmented

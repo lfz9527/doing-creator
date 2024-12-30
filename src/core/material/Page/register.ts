@@ -1,13 +1,15 @@
-import Text from '.'
+import Page from '.'
 import {MaterialContext} from '../types'
 
+const name = 'Page'
+
 export default (ctx: MaterialContext) => {
-    ctx.registerMater('Text', {
-        name: 'Text',
+    ctx.registerMater(name, {
+        name: name,
         icon: '',
-        description: '按钮',
-        component: Text,
-        allowDrag: ['Page'],
+        description: '页面',
+        component: Page,
+        allowDrag: [],
         ComponentType: 'static',
         category: 'static',
         defaultProps: []

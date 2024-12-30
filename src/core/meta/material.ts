@@ -1,4 +1,4 @@
-import {ReactNode} from 'react'
+import React from 'react'
 import {
     ComponentNodePropType,
     materialCateType,
@@ -36,7 +36,7 @@ export type MaterialConfig = {
     /**
      * 物料对应的组件
      */
-    component: ReactNode
+    component: React.ComponentType<any>
     /**
      * 组件类型
      */

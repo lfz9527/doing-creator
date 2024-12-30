@@ -1,7 +1,5 @@
-import {
-    ComponentNode,
-    baseComponentNodePropType
-} from '@core/meta/component-node'
+import {ComponentNode} from '@core/meta/component-node'
+import {ComponentNodePropType} from '@/core/meta'
 import {ReactNode} from 'react'
 
 /**
@@ -18,7 +16,7 @@ interface CusCreateElementHandleContext {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ComponentConstructor: any
     props: {
-        [key: string]: baseComponentNodePropType
+        [key: string]: ComponentNodePropType
     }
     children?: ReactNode[]
 }

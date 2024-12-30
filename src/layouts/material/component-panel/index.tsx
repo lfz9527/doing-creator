@@ -8,6 +8,10 @@ import {useMemo} from 'react'
 const ComponentPanel = () => {
     const {materialMapConfig} = useMaterial()
 
+    const onDragStart = () => {}
+
+    const onDragEnd = () => {}
+
     const materialsPanel = useMemo(() => {
         // 初始化分类
         const initializeCategoryMap = () => {
@@ -42,8 +46,14 @@ const ComponentPanel = () => {
                         {materialCate[key]}
                     </div>
                     <div className='grid grid-cols-2 gap-[8px]'>
-                        {values.map((child) => (
-                            <ComponentItem key={child.name} {...child} />
+                        {values.map((com, index) => (
+                            <div key={com.name + index}>
+                                <ComponentItem
+                                    {...com}
+                                    onDragEnd={onDragEnd}
+                                    onDragStart={onDragStart}
+                                />
+                            </div>
                         ))}
                     </div>
                 </div>

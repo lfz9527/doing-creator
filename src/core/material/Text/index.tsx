@@ -1,4 +1,7 @@
-const Text = ({value}: {value: string | number}) => {
-    return <>{value}</>
-}
-export default Text
+import React from 'react';
+
+const Text: React.FC<{ value: string | number }> = ({ value }) => {
+  return <div>{value}</div>;
+};
+
+export default Text;

@@ -78,13 +78,15 @@ export class BuildEngine {
             return null
         }
 
+        const realProps = {...props, id, name}
+
         if (typeof buildOptions?.onCustomCreateElement === 'function') {
             // 如果外部提供了对应的自定义创建实现，则使用之
             return buildOptions.onCustomCreateElement({
                 componentNode,
                 path,
                 ComponentConstructor: componentConstructor,
-                props: {...props},
+                props: {...realProps},
                 children:
                     childrenReactNode.length > 0 ? childrenReactNode : undefined
             })
@@ -95,8 +97,9 @@ export class BuildEngine {
                 | React.ComponentType<Record<string, unknown>>
                 | string,
             {
-                ...props,
-                key: path,
+                ...realProps,
+                path,
+                key: path + id,
                 'data-component-id': id
             },
             childrenReactNode.length > 0 ? childrenReactNode : null

@@ -39,13 +39,14 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
 
                     // 不加Wrapper的原始构造后的组件
                     const originReactComp = (
-                        <ComponentConstructor {...props}>
+                        <ComponentConstructor key={path + props.id} {...props}>
                             {children}
                         </ComponentConstructor>
                     )
 
                     const wrapperProps: ComponentNodeDesignWrapperProps = {
                         nodePath: path,
+                        id: props.id.toString(),
                         isSelected: path === selectedNodePath,
                         onClick: () => {
                             console.debug('wrapper onClick')
@@ -53,7 +54,10 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
                         }
                     }
                     return (
-                        <ComponentNodeDesignWrapper {...wrapperProps}>
+                        <ComponentNodeDesignWrapper
+                            key={path + props.id}
+                            {...wrapperProps}
+                        >
                             {originReactComp}
                         </ComponentNodeDesignWrapper>
                     )

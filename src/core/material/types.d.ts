@@ -1,8 +1,9 @@
+import {MaterialConfig} from '@/core/meta/material'
 /**
  * 组件上下文
  */
 export type MaterialContext = {
-    registerMater: (name: string, componentConfig: ComponentConfig) => void
+    registerMater: (name: string, componentConfig: MaterialConfig) => void
 }
 
 /**
