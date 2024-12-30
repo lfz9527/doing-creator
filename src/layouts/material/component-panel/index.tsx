@@ -1,17 +1,44 @@
 import ComponentItem from '@/components/component-item'
+import {DragOptions} from '@/components/component-item/type'
 import {materialCate} from '@core/enum'
-import {materialCateType} from '@core/meta/types'
-import {MaterialConfig} from '@core/meta'
-import {useMaterial} from '@/store'
-import {useMemo} from 'react'
-
+import {MaterialConfig, materialCateType, ComponentNode} from '@core/meta'
+import {formatProps} from '@core/utils'
+import {useMaterial, useComponent} from '@/store'
+import {useCallback, useMemo} from 'react'
 const ComponentPanel = () => {
     const {materialMapConfig} = useMaterial()
+    const {insertComponent} = useComponent()
 
+    /**
+     * 拖拽开始回调
+     */
     const onDragStart = () => {}
 
-    const onDragEnd = () => {}
+    /**
+     *
+     * @param dropResult 拖拽结束回调
+     */
+    const onDragEnd = useCallback(
+        (dropResult: DragOptions) => {
+            const parentId = dropResult.id
+            const node: ComponentNode = {
+                type: dropResult.componentType,
+                description: dropResult.description,
+                props: formatProps(dropResult.props),
+                name: dropResult.name,
+                isLock: false,
+                children: [],
+                id: String(new Date().getTime()),
+                parentId
+            }
+            insertComponent('', parentId, node)
+        },
+        [insertComponent]
+    )
 
+    /**
+     * 渲染所有物料映射组件
+     */
     const materialsPanel = useMemo(() => {
         // 初始化分类
         const initializeCategoryMap = () => {
@@ -28,11 +55,11 @@ const ComponentPanel = () => {
 
         // 分组组件
         componentsConf.forEach((item) => {
-            if (materialCateMap.has(item.category)) {
+            // 允许放置的组件才能出现在组件菜单
+            if (materialCateMap.has(item.category) && item.allowDrop) {
                 materialCateMap.get(item.category)!.push(item)
             }
         })
-
         // 渲染分类组件
         const renderCategory = ([key, values]: [
             materialCateType,
@@ -61,7 +88,7 @@ const ComponentPanel = () => {
         }
 
         return Array.from(materialCateMap).map(renderCategory)
-    }, [materialMapConfig])
+    }, [materialMapConfig, onDragEnd])
 
     return (
         <div className='p-2 w-[250px]'>

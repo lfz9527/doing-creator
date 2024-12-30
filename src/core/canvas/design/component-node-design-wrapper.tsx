@@ -62,7 +62,7 @@ export const ComponentNodeDesignWrapper: FC<
                 ? 'inline-block'
                 : '',
             padding: '3px',
-            margin: '3px'
+            margin: '3px',
         }
     }, [isSelected, targetNodeHtmlType])
 

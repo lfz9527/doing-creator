@@ -8,7 +8,7 @@ type Props = {
     [key: string]: any
 }
 
-const Text: FC<Props> = (props) => {
+const Page: FC<Props> = (props) => {
     const {children, id, name} = props
 
     const {drop,canDrop} = useDrop({
@@ -27,4 +27,4 @@ const Text: FC<Props> = (props) => {
         </div>
     )
 }
-export default Text
+export default Page

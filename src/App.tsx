@@ -2,6 +2,7 @@ import {useEffect} from 'react'
 import Material from '@core/material'
 import Layout from './layouts'
 import {useMaterial} from '@/store'
+import {initCanvas} from '@/utils'
 
 const material = new Material()
 
@@ -13,6 +14,7 @@ const App = () => {
         async function loadingMaterialComponent() {
             const mate = await material.injectMaterial()
             setMaterialConfig(mate.materialMap)
+            initCanvas()
         }
 
         loadingMaterialComponent()

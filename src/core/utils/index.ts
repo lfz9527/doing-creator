@@ -1,4 +1,5 @@
 import {useMaterial} from '@/store'
+import {ComponentNodePropType, MaterialPropType} from '@core/meta'
 
 /**
  * 获取组件允许拖入的组件
@@ -12,4 +13,19 @@ export const getAcceptDrop = (name: string) => {
             .filter((c) => c.allowDrag?.includes(name))
             .map((o) => o.name) || []
     )
+}
+
+/**
+ * 格式化组件属性
+ * @param component 组件
+ * @returns
+ */
+export const formatProps = (propsList: MaterialPropType[] = []) => {
+    const propsData: {
+        [key: string]: ComponentNodePropType
+    } = {}
+    propsList.forEach(({key, value}) => {
+        propsData[key] = value
+    })
+    return propsData
 }

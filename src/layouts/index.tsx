@@ -1,9 +1,12 @@
+
 import Header from './header'
 import Canvas from './canvas'
 import Setting from './setting'
 import Material from './material'
 
+
 const Layout = () => {
+
     return (
         <div className='h-screen w-full overflow-hidden bg-[#edeff3]'>
             <Header />

@@ -7,16 +7,20 @@ import {
 import {BuildEngine} from '@core/engine'
 
 interface DesignCanvasProps {
+
     /**
-     * 传入的合法 ComponentNode
+     * 组件节点shame数据
      */
     componentNode: ComponentNode
+    /**
+     * 选中的节点变化时的回调
+     */
+    selectOnChange?: (nodePath: string, id: string) => void
 }
 
 export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
-    const {componentNode} = props
+    const {componentNode, selectOnChange} = props
     const [content, setContent] = useState<React.ReactNode>(null)
-
     // 存储选中的path的state
     const [selectedNodePath, setSelectedNodePath] = useState<string>('')
 
@@ -29,13 +33,13 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
         setSelectedNodePath('')
     }, [componentNode])
 
-    // 经过buildEngine + schema 创建的React组件（已经考虑的基本的异常处理）
-
     const renderComponent = useMemo(async () => {
         try {
             return await buildEngine.build(componentNode, {
                 onCustomCreateElement: (ctx) => {
                     const {path, ComponentConstructor, props, children} = ctx
+
+                    const id = props.id.toString()
 
                     // 不加Wrapper的原始构造后的组件
                     const originReactComp = (
@@ -46,11 +50,12 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
 
                     const wrapperProps: ComponentNodeDesignWrapperProps = {
                         nodePath: path,
-                        id: props.id.toString(),
+                        id,
                         isSelected: path === selectedNodePath,
                         onClick: () => {
                             console.debug('wrapper onClick')
                             setSelectedNodePath(path)
+                            selectOnChange?.(path, id)
                         }
                     }
                     return (
@@ -66,11 +71,10 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
         } catch (error: unknown) {
             return <div>构建出错：{(error as Error).message}</div>
         }
-    }, [componentNode, selectedNodePath, buildEngine])
-
+    }, [componentNode, selectedNodePath, buildEngine,selectOnChange])
     useEffect(() => {
         renderComponent.then(setContent)
-    }, [renderComponent])
+    }, [renderComponent, componentNode])
 
     return content
 }

@@ -1,7 +1,7 @@
 import Page from '.'
 import {MaterialContext} from '../types'
 
-const name = 'Page'
+const name = Page.name
 
 export default (ctx: MaterialContext) => {
     ctx.registerMater(name, {
@@ -10,8 +10,9 @@ export default (ctx: MaterialContext) => {
         description: '页面',
         component: Page,
         allowDrag: [],
-        ComponentType: 'static',
+        componentType: 'static',
         category: 'static',
-        defaultProps: []
+        defaultProps: [],
+        allowDrop: false,
     })
 }

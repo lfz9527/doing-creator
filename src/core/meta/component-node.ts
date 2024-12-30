@@ -1,5 +1,5 @@
-import {ComponentType} from '@core/enum'
-import {ComponentNodePropType} from './types'
+
+import {ComponentNodePropType,ComponentBaseType} from './types'
 
 /**
  * 组件节点
@@ -24,7 +24,7 @@ export type ComponentNode = {
     /**
      * 组件类型
      */
-    type: ComponentType
+    type: ComponentBaseType
     /**
      * 组件节点唯一名称
      */

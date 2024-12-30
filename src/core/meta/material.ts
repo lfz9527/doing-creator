@@ -40,7 +40,7 @@ export type MaterialConfig = {
     /**
      * 组件类型
      */
-    ComponentType: ComponentBaseType
+    componentType: ComponentBaseType
     /**
      * 组件分类
      */
@@ -49,4 +49,12 @@ export type MaterialConfig = {
      * 组件默认属性
      */
     defaultProps?: MaterialPropType[]
+    /**
+     * 是否允许放置
+     */
+    allowDrop: boolean,
+    /**
+     * 子组件
+     */
+    children?: React.ComponentType<any>
 }
