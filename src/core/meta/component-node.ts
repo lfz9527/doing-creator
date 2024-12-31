@@ -26,6 +26,10 @@ export type ComponentNode = {
      */
     type: ComponentBaseType
     /**
+     * 组件分类
+     */
+    category: string
+    /**
      * 组件节点唯一名称
      */
     name: string

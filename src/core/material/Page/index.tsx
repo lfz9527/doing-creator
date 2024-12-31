@@ -11,7 +11,7 @@ type Props = {
 const Page: FC<Props> = (props) => {
     const {children, id, name} = props
 
-    const {drop,canDrop} = useDrop({
+    const {drop, canDrop} = useDrop({
         id,
         name,
         path: ''
@@ -22,7 +22,13 @@ const Page: FC<Props> = (props) => {
     }, [canDrop])
 
     return (
-        <div ref={drop} style={{minHeight: 300}}>
+        <div
+            ref={drop}
+            {...props}
+            style={{
+                height: '100%'
+            }}
+        >
             {children}
         </div>
     )

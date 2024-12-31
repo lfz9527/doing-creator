@@ -1,6 +1,7 @@
 import {Button, Space, Popconfirm, Segmented} from 'antd'
 import SvgIcon from '@/components/svg-icon'
 import {useCanvas} from '@/store'
+import {initCanvas} from '@/utils'
 
 const screenOptions = [
     {
@@ -24,12 +25,14 @@ const icons = (name: string) => (
 )
 
 const Header = () => {
-    const {ref: canvasRef} = useCanvas()
+    const {canvasRef} = useCanvas()
 
     /**
      * @description: 清空画布
      */
-    const clearPage = () => {}
+    const clearPage = () => {
+        initCanvas()
+    }
     /**
      * @description: 预览
      */

@@ -1,4 +1,4 @@
-import {FC, useEffect, useMemo, useState} from 'react'
+import {FC, useEffect, useMemo} from 'react'
 import {ComponentBaseType} from '@core/meta/types'
 import {MaterialPropType} from '@core/meta/material'
 import {useDrag} from 'react-dnd'
@@ -13,9 +13,11 @@ const ComponentItem: FC<Props> = (props) => {
     const {materialMapConfig} = useMaterial()
     const {canvasComponent} = useComponent()
 
-    const defaultProps = useMemo(() => {
-        return materialMapConfig.get(name)?.defaultProps || []
+    const materialConfig = useMemo(() => {
+        return materialMapConfig.get(name)!
     }, [materialMapConfig, name])
+
+
     const [{isDragging}, drag] = useDrag({
         type: name,
         item: {
@@ -26,10 +28,13 @@ const ComponentItem: FC<Props> = (props) => {
             if (!dropResult) return
 
             if (onDragEnd) {
+                const defaultProps = materialConfig?.defaultProps || []
+
                 const dragOptions = {
                     name,
                     props: [...defaultProps] as MaterialPropType[],
                     componentType: componentType as ComponentBaseType,
+                    category: materialConfig?.category,
                     description,
                     ...dropResult
                 }
@@ -47,13 +52,17 @@ const ComponentItem: FC<Props> = (props) => {
     })
 
     const clickAddComponent = () => {
+        const defaultProps = materialConfig?.defaultProps || []
+        
         const dragOptions = {
             name,
             props: [...defaultProps] as MaterialPropType[],
             componentType: componentType as ComponentBaseType,
+            category: materialConfig?.category,
             description,
             id: canvasComponent?.id
         }
+        
 
         // 拖拽结束回调
         onDragEnd(dragOptions)

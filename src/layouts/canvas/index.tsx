@@ -4,7 +4,7 @@ import {useEffect, useMemo, useRef} from 'react'
 import {useCanvas} from '@/store'
 import {useComponent} from '@/store'
 const Canvas = () => {
-    const {setCanvasRef} = useCanvas()
+    const {setCanvasRef, canvasRef: containerRef} = useCanvas()
     const {components, canvasComponent, setCurComponentInfo} = useComponent()
     const canvasRef = useRef<HTMLDivElement>(null)
     useEffect(() => {
@@ -39,16 +39,21 @@ const Canvas = () => {
     }
 
     return (
-        <div className='w-full h-full pt-[8px] px-[12px] pb-[12px] flex justify-center content-center overflow-hidden'>
+        <div
+            className='w-full h-full pt-[8px] px-[12px] pb-[12px] flex justify-center content-center overflow-hidden'
+        >
             <div
                 id={CANVAS_ID}
                 ref={canvasRef}
-                className='w-full h-full overflow-auto bg-white '
+                className='w-full overflow-auto bg-white'
+                style={{height: 'calc(100vh - 72px)'}}
             >
-                <DesignCanvas
-                    componentNode={updateNodeSchema!}
-                    selectOnChange={selectNodeEvent}
-                />
+                {containerRef?.current && (
+                    <DesignCanvas
+                        componentNode={updateNodeSchema!}
+                        selectOnChange={selectNodeEvent}
+                    />
+                )}
             </div>
         </div>
     )

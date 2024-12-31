@@ -26,6 +26,7 @@ const ComponentPanel = () => {
                 description: dropResult.description,
                 props: formatProps(dropResult.props),
                 name: dropResult.name,
+                category: dropResult.category,
                 isLock: false,
                 children: [],
                 id: String(new Date().getTime()),

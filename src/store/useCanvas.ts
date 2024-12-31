@@ -2,16 +2,16 @@
 import {create} from 'zustand'
 
 type CanvasInfo = {
-    ref: React.RefObject<HTMLDivElement> | null
+    canvasRef: React.RefObject<HTMLDivElement> | null
 }
 
 type Action = {
-    setCanvasRef: (ref: CanvasInfo['ref']) => void
+    setCanvasRef: (ref: CanvasInfo['canvasRef']) => void
 }
 
 const useCanvas = create<CanvasInfo & Action>((set) => ({
-    ref: null,
-    setCanvasRef: (ref: CanvasInfo['ref']) => set({ref})
+    canvasRef: null,
+    setCanvasRef: (canvasRef: CanvasInfo['canvasRef']) => set({canvasRef})
 }))
 
 export default useCanvas

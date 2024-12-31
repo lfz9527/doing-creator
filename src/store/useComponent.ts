@@ -84,7 +84,8 @@ const useMaterial = create<componentsInfo & Action>((set, get) => ({
     },
     initCanvasComponent: (component) => {
         set({
-            canvasComponent: component
+            canvasComponent: component,
+            components:[]
         })
     },
     addComponent: (component, parentId) => {

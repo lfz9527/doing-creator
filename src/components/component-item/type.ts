@@ -1,5 +1,4 @@
-import {ComponentBaseType} from '@core/meta/types'
-import {MaterialPropType} from '@core/meta/material'
+import {ComponentBaseType,materialCateType,MaterialPropType} from '@core/meta/'
 
 export type Props ={
       // 图标
@@ -22,6 +21,7 @@ export type DragOptions = {
   props: MaterialPropType[]
   componentType: ComponentBaseType
   description: string
+  category: materialCateType
   [key: string]: any
 }
 

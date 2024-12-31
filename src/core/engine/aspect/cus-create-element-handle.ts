@@ -13,7 +13,6 @@ import {ReactNode} from 'react'
 interface CusCreateElementHandleContext {
     componentNode: ComponentNode
     path: string
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ComponentConstructor: any
     props: {
         [key: string]: ComponentNodePropType

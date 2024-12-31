@@ -12,6 +12,7 @@ export const initCanvas = () => {
     const node: ComponentNode = {
         type: Page.componentType,
         description: Page.description,
+        category: Page.category,
         props: formatProps(Page.defaultProps),
         name: 'Page',
         isLock: true,
