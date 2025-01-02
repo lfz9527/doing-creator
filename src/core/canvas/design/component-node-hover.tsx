@@ -1,6 +1,7 @@
-import {FC, useEffect, useRef} from 'react'
+import {FC, useEffect, useRef, useState} from 'react'
 import NameToolPanel from '../action-tools/name-tool-panel'
 import Material from '@core/material'
+import {calcRelativePosition} from '@core/utils'
 
 const material = new Material()
 material.init()
@@ -9,43 +10,68 @@ export type ComponentNodeHoverProps = {
     element: HTMLElement
     id: string
     name: string
+    windowCanvas: HTMLDivElement
+}
+
+type ElementRect = {
+    width: number
+    height: number
+    left: number
+    top: number
 }
 
 export const ComponentNodeHover: FC<ComponentNodeHoverProps> = (props) => {
-    const {element, id, name} = props
-    const {width, height, left, top} = element.getBoundingClientRect()
+    const {element, id, name, windowCanvas} = props
+    const [rect, setRect] = useState<ElementRect>({
+        width: 0,
+        height: 0,
+        left: 0,
+        top: 0
+    })
+
     const nameToolRef = useRef<HTMLDivElement>(null)
 
-    useEffect(calcNameToolPosition, [id])
+    const calcMask = () => {
+        const position = calcRelativePosition(element, windowCanvas)
+        setRect(position)
+    }
+
+    useEffect(() => {
+        calcMask()
+        calcNameToolPosition()
+    }, [id])
 
     // 计算nameTool的位置
     function calcNameToolPosition() {
         let display = 'none'
-        let containerTop = '0'
-        let containerLef = '0'
+        let toolTop = 0
+        let toolLeft = 0
         if (nameToolRef.current) {
             const {width: toolWidth, height: toolHeight} =
                 nameToolRef.current.getBoundingClientRect()
+            const {width, left, top} = rect
 
-            containerLef = `${left + width - toolWidth - 12}px`
+            console.log(left, '--')
+            console.log(width, '--')
+
+            toolLeft = left + width - toolWidth - 12
             if (name === 'Page') {
-                containerTop = `${top + 12}px`
+                toolTop = top + 12
             } else {
                 const curTop = top - toolHeight
 
                 if (curTop <= 40) {
                     // 超出页面
-                    containerTop = `${top}px`
+                    toolTop = top
                 } else {
-                    containerTop = `${curTop}px`
+                    toolTop = curTop
                 }
 
-                containerLef = `${left + width - toolWidth}px`
-                display = 'block'
+                toolLeft = left + width - toolWidth
             }
             display = 'block'
-            nameToolRef.current.style.left = containerLef
-            nameToolRef.current.style.top = containerTop
+            nameToolRef.current.style.left = toolLeft + 'px'
+            nameToolRef.current.style.top = toolTop + 'px'
             nameToolRef.current.style.display = display
         }
     }
@@ -67,10 +93,7 @@ export const ComponentNodeHover: FC<ComponentNodeHoverProps> = (props) => {
                     className='absolute z-[100] pointer-events-none'
                     style={{
                         border: '2px dotted blue',
-                        width,
-                        height,
-                        left,
-                        top
+                        ...rect
                     }}
                 ></div>
             </>

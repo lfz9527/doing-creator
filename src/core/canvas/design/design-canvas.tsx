@@ -8,8 +8,13 @@ import {ComponentNodeHover} from './component-node-hover'
 import {ComponentNodeSelect} from './component-node-select'
 import LayoutEmpty from './layout-empty'
 import {BuildEngine} from '@core/engine'
+import {ActionType,ActionOption} from '@core/canvas/action-tools/type'
 
 interface DesignCanvasProps {
+    /**
+     * 画布的ref 
+     */
+    windowCanvas: HTMLDivElement
     /**
      * 组件节点shame数据
      */
@@ -18,10 +23,14 @@ interface DesignCanvasProps {
      * 选中的节点变化时的回调
      */
     selectOnChange?: (nodePath: string, id: string) => void
+    /**
+     * 工具栏的action
+     */
+    onToolAction?:(option?:ActionOption)=>void
 }
 
 export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
-    const {componentNode, selectOnChange} = props
+    const {componentNode, selectOnChange,onToolAction,windowCanvas} = props
     const [content, setContent] = useState<React.ReactNode>(null)
     const canvasRef = useRef<HTMLDivElement | null>(null)
     const [selectedEl, setSelectedEl] = useState<HTMLDivElement | null>(null)
@@ -39,6 +48,10 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
         setSelectedEl(null)
         setHoverEl(null)
     }, [componentNode])
+
+    const onAction = (type:ActionType) =>{
+        onToolAction?.({type,payload:selectNode})
+    }
 
     const renderComponent = useMemo(async () => {
         try {
@@ -110,7 +123,7 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
     return (
         <>
             {hoverEl && hoverNode?.id && hoverNode?.id !== selectNode?.id && (
-                <ComponentNodeHover element={hoverEl!} id={hoverNode?.id } name={hoverNode.name} />
+                <ComponentNodeHover element={hoverEl!} id={hoverNode?.id } name={hoverNode.name}                     windowCanvas={windowCanvas} />
             )}
             {selectedEl && selectNode?.id && (
                 <ComponentNodeSelect
@@ -118,6 +131,8 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
                     id={selectNode?.id}
                     name={selectNode.name}
                     canvasRef={canvasRef}
+                    onAction={onAction}
+                    windowCanvas={windowCanvas}
                 />
             )}
 

@@ -1,7 +1,10 @@
 import {FC, useEffect, useState, useCallback, useRef} from 'react'
 import {useResizeObserver} from '@core/hooks'
 import NameToolPanel from '../action-tools/name-tool-panel'
+import ActionToolPanel from '../action-tools/action-tool-panel'
 import Material from '@core/material'
+import {ActionType} from '../action-tools/type'
+import {calcRelativePosition} from '@core/utils'
 
 const material = new Material()
 material.init()
@@ -18,14 +21,19 @@ export type ComponentNodeSelectProps = {
     id: string
     name: string
     canvasRef: React.RefObject<HTMLDivElement>
+    onAction: (type: ActionType) => void
+    windowCanvas: HTMLDivElement
 }
 
 export const ComponentNodeSelect: FC<ComponentNodeSelectProps> = ({
     element,
     id,
     canvasRef,
-    name
+    name,
+    onAction,
+    windowCanvas = document.querySelector('body')!
 }) => {
+    const isPage = name === 'Page'
     const nameToolRef = useRef<HTMLDivElement>(null)
     const [rect, setRect] = useState<ElementRect>({
         width: 0,
@@ -36,8 +44,8 @@ export const ComponentNodeSelect: FC<ComponentNodeSelectProps> = ({
 
     const updateRect = useCallback(() => {
         if (element) {
-            const {width, height, left, top} = element.getBoundingClientRect()
-            setRect({width, height, left, top})
+            const {width,left,top,height} = calcRelativePosition(element, windowCanvas)
+            setRect({width,left,top,height})
             calcNameToolPosition({width, left, top})
         }
     }, [element])
@@ -48,6 +56,18 @@ export const ComponentNodeSelect: FC<ComponentNodeSelectProps> = ({
         updateRect()
         observe([canvasRef.current!, element])
     }, [id])
+
+    useEffect(() => {
+        windowCanvas.addEventListener('scroll', () => {
+            updateRect()
+        })
+        return () => {
+            windowCanvas.removeEventListener('scroll', () => {
+                updateRect()
+            })
+        }
+    }, [])
+    
 
     // 计算nameTool的位置
     function calcNameToolPosition({width, left, top}:{
@@ -74,9 +94,8 @@ export const ComponentNodeSelect: FC<ComponentNodeSelectProps> = ({
                     containerTop = `${curTop}px`
                 }
                 containerLef = `${left + width - toolWidth - 3}px`
-                display = 'block'
             }
-            display = 'block'
+            display = 'flex'
 
             console.log('containerTop', containerTop)
 
@@ -85,6 +104,7 @@ export const ComponentNodeSelect: FC<ComponentNodeSelectProps> = ({
             nameToolRef.current.style.display = display
         }
     }
+
 
     const componentId = element.getAttribute('component-id')
     const {description, icon} = material.materialMap.get(name)!
@@ -95,10 +115,14 @@ export const ComponentNodeSelect: FC<ComponentNodeSelectProps> = ({
                     ref={nameToolRef}
                     className='absolute z-[100]'
                     style={{
-                        display: 'none'
+                        display: 'none',
+                        gap: 4,
                     }}
                 >
                     <NameToolPanel name={description} icon={icon} />
+                    {
+                        !isPage && <ActionToolPanel onAction={onAction}/>
+                    }
                 </div>
                 <div
                     className='absolute z-[9999] pointer-events-none'

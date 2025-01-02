@@ -45,13 +45,14 @@ const Canvas = () => {
             <div
                 id={CANVAS_ID}
                 ref={canvasRef}
-                className='w-full overflow-auto bg-white'
+                className='relative w-full overflow-auto bg-white'
                 style={{height: 'calc(100vh - 72px)'}}
             >
                 {containerRef?.current && (
                     <DesignCanvas
                         componentNode={updateNodeSchema!}
                         selectOnChange={selectNodeEvent}
+                        windowCanvas={containerRef.current}
                     />
                 )}
             </div>

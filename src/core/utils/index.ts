@@ -29,3 +29,29 @@ export const formatProps = (propsList: MaterialPropType[] = []) => {
     })
     return propsData
 }
+
+/**
+ * 计算相对位置
+ * @param target 目标元素
+ * @param container 容器元素
+ * @returns
+ */
+export const calcRelativePosition = (
+    target: HTMLElement,
+    container: HTMLElement
+): {
+    width: number
+    height: number
+    left: number
+    top: number
+} => {
+    const elementRect = target.getBoundingClientRect()
+    const containerRect = container.getBoundingClientRect()
+
+    return {
+        width: elementRect.width,
+        height: elementRect.height,
+        left: elementRect.left - containerRect.left + container.scrollLeft,
+        top: elementRect.top - containerRect.top + container.scrollTop
+    }
+}

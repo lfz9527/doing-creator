@@ -24,7 +24,7 @@ const NameToolPanel: FC<PropsWithChildren<Props>> = ({icon, name}) => {
                         }}
                     />
                 </div>
-                {name}
+                <div className='whitespace-nowrap'>{name}</div>
             </div>
         </ToolsWrap>
     )
