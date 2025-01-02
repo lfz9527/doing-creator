@@ -42,11 +42,18 @@ export const ComponentNodeSelect: FC<ComponentNodeSelectProps> = ({
         top: 0
     })
 
+    const updateRectFn = () => {
+        const {width, left, top, height} = calcRelativePosition(
+            element,
+            windowCanvas
+        )
+        setRect({width, left, top, height})
+        calcNameToolPosition({width, left, top})
+    }
+
     const updateRect = useCallback(() => {
         if (element) {
-            const {width,left,top,height} = calcRelativePosition(element, windowCanvas)
-            setRect({width,left,top,height})
-            calcNameToolPosition({width, left, top})
+            updateRectFn()
         }
     }, [element])
 
@@ -59,18 +66,21 @@ export const ComponentNodeSelect: FC<ComponentNodeSelectProps> = ({
 
     useEffect(() => {
         windowCanvas.addEventListener('scroll', () => {
-            updateRect()
+            updateRectFn()
         })
         return () => {
             windowCanvas.removeEventListener('scroll', () => {
-                updateRect()
+                updateRectFn()
             })
         }
     }, [])
-    
 
     // 计算nameTool的位置
-    function calcNameToolPosition({width, left, top}:{
+    function calcNameToolPosition({
+        width,
+        left,
+        top
+    }: {
         width: number
         left: number
         top: number
@@ -105,7 +115,6 @@ export const ComponentNodeSelect: FC<ComponentNodeSelectProps> = ({
         }
     }
 
-
     const componentId = element.getAttribute('component-id')
     const {description, icon} = material.materialMap.get(name)!
     if (componentId === id) {
@@ -116,13 +125,11 @@ export const ComponentNodeSelect: FC<ComponentNodeSelectProps> = ({
                     className='absolute z-[100]'
                     style={{
                         display: 'none',
-                        gap: 4,
+                        gap: 4
                     }}
                 >
                     <NameToolPanel name={description} icon={icon} />
-                    {
-                        !isPage && <ActionToolPanel onAction={onAction}/>
-                    }
+                    {!isPage && <ActionToolPanel onAction={onAction} />}
                 </div>
                 <div
                     className='absolute z-[9999] pointer-events-none'
