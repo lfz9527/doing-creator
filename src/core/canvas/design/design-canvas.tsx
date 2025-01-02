@@ -1,4 +1,4 @@
-import {FC, useState, useMemo, useEffect, useRef} from 'react'
+import {FC, useState, useMemo, useEffect, useRef, useCallback} from 'react'
 import {ComponentNode} from '@/core/meta/component-node'
 import {
     ComponentNodeDesignWrapperProps,
@@ -8,11 +8,11 @@ import {ComponentNodeHover} from './component-node-hover'
 import {ComponentNodeSelect} from './component-node-select'
 import LayoutEmpty from './layout-empty'
 import {BuildEngine} from '@core/engine'
-import {ActionType,ActionOption} from '@core/canvas/action-tools/type'
+import {ActionType, ActionOption} from '@core/canvas/action-tools/type'
 
 interface DesignCanvasProps {
     /**
-     * 画布的ref 
+     * 画布的ref
      */
     windowCanvas: HTMLDivElement
     /**
@@ -26,31 +26,29 @@ interface DesignCanvasProps {
     /**
      * 工具栏的action
      */
-    onToolAction?:(option?:ActionOption)=>void
+    onToolAction?: (option?: ActionOption) => void
 }
 
 export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
-    const {componentNode, selectOnChange,onToolAction,windowCanvas} = props
+    const {componentNode, selectOnChange, onToolAction, windowCanvas} = props
     const [content, setContent] = useState<React.ReactNode>(null)
     const canvasRef = useRef<HTMLDivElement | null>(null)
     const [selectedEl, setSelectedEl] = useState<HTMLDivElement | null>(null)
     const [hoverEl, setHoverEl] = useState<HTMLDivElement | null>(null)
     const [hoverNode, setHoverNode] = useState<ComponentNode | null>(null)
-    const [selectNode, setSelectNode] =  useState<ComponentNode | null>(null)
-
-    
+    const [selectNode, setSelectNode] = useState<ComponentNode | null>(null)
 
     const buildEngine = useMemo(() => {
         return new BuildEngine()
     }, [])
 
     useEffect(() => {
-        setSelectedEl(null)
-        setHoverEl(null)
+        setSelectNode(null)
+        setHoverNode(null)
     }, [componentNode])
 
-    const onAction = (type:ActionType) =>{
-        onToolAction?.({type,payload:selectNode})
+    const onAction = (type: ActionType) => {
+        onToolAction?.({type, payload: selectNode})
     }
 
     const renderComponent = useMemo(async () => {
@@ -115,16 +113,28 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
         }
     }, [componentNode, buildEngine, selectOnChange])
 
-
     useEffect(() => {
         renderComponent.then(setContent)
     }, [renderComponent, componentNode])
 
+    const HoverMask = useCallback(() => {
+        if (hoverEl && hoverNode?.id && hoverNode?.id !== selectNode?.id) {
+            return (
+                <ComponentNodeHover
+                    element={hoverEl!}
+                    id={hoverNode?.id}
+                    name={hoverNode.name}
+                    windowCanvas={windowCanvas}
+                />
+            )
+        }
+        return null
+    }, [hoverEl, hoverNode, selectNode, windowCanvas])
+
     return (
         <>
-            {hoverEl && hoverNode?.id && hoverNode?.id !== selectNode?.id && (
-                <ComponentNodeHover element={hoverEl!} id={hoverNode?.id } name={hoverNode.name}                     windowCanvas={windowCanvas} />
-            )}
+            {HoverMask()}
+
             {selectedEl && selectNode?.id && (
                 <ComponentNodeSelect
                     element={selectedEl}

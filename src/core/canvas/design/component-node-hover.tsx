@@ -1,4 +1,4 @@
-import {FC, useEffect, useRef, useState} from 'react'
+import {FC, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import NameToolPanel from '../action-tools/name-tool-panel'
 import Material from '@core/material'
 import {calcRelativePosition} from '@core/utils'
@@ -7,74 +7,74 @@ const material = new Material()
 material.init()
 
 export type ComponentNodeHoverProps = {
+    /**
+     * 当前hover的组件的元素
+     */
     element: HTMLElement
+    /**
+     * 当前hover的组件的id
+     */
     id: string
+    /**
+     * 当前hover的组件的名称
+     */
     name: string
+    /**
+     * 画布的dom元素
+     */
     windowCanvas: HTMLDivElement
 }
 
-type ElementRect = {
-    width: number
-    height: number
+type Position = {
     left: number
     top: number
+    width: number
+    height: number
+    display: string
 }
 
 export const ComponentNodeHover: FC<ComponentNodeHoverProps> = (props) => {
     const {element, id, name, windowCanvas} = props
-    const [rect, setRect] = useState<ElementRect>({
+    const [rect, setRect] = useState<Position>({
+        left: 0,
+        top: 0,
         width: 0,
         height: 0,
-        left: 0,
-        top: 0
+        display: 'none'
     })
 
     const nameToolRef = useRef<HTMLDivElement>(null)
 
-    const calcMask = () => {
-        const position = calcRelativePosition(element, windowCanvas)
-        setRect(position)
-    }
-
     useEffect(() => {
+        function calcMask() {
+            const position = calcRelativePosition(element, windowCanvas)
+            setRect({
+                ...position,
+                display: 'block'
+            })
+        }
         calcMask()
-        calcNameToolPosition()
-    }, [id])
+    }, [id, element, windowCanvas])
 
     // 计算nameTool的位置
-    function calcNameToolPosition() {
-        let display = 'none'
-        let toolTop = 0
-        let toolLeft = 0
-        if (nameToolRef.current) {
-            const {width: toolWidth, height: toolHeight} =
-                nameToolRef.current.getBoundingClientRect()
-            const {width, left, top} = rect
-
-            console.log(left, '--')
-            console.log(width, '--')
-
-            toolLeft = left + width - toolWidth - 12
-            if (name === 'Page') {
-                toolTop = top + 12
-            } else {
-                const curTop = top - toolHeight
-
-                if (curTop <= 40) {
-                    // 超出页面
-                    toolTop = top
-                } else {
-                    toolTop = curTop
-                }
-
-                toolLeft = left + width - toolWidth
-            }
-            display = 'block'
-            nameToolRef.current.style.left = toolLeft + 'px'
-            nameToolRef.current.style.top = toolTop + 'px'
-            nameToolRef.current.style.display = display
+    const calcNameToolPosition = useMemo(() => {
+        if (!nameToolRef.current) {
+            return {display: 'none', top: 0, left: 0}
         }
-    }
+        const {height: toolHeight} = nameToolRef.current.getBoundingClientRect()
+        const {left, top} = rect
+
+        const toolLeft = left
+        const toolTop =
+            name === 'Page' ? top : Math.max(0, top - (toolHeight + 2))
+
+        return {
+            display: 'block',
+            top: toolTop,
+            left: toolLeft
+        }
+    }, [rect, nameToolRef, name])
+
     const componentId = element.getAttribute('component-id')
     const {description, icon} = material.materialMap.get(name)!
     if (componentId === id) {
@@ -84,7 +84,7 @@ export const ComponentNodeHover: FC<ComponentNodeHoverProps> = (props) => {
                     ref={nameToolRef}
                     className='absolute z-[100]'
                     style={{
-                        display: 'none'
+                        ...calcNameToolPosition
                     }}
                 >
                     <NameToolPanel name={description} icon={icon} />
