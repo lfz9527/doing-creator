@@ -29,23 +29,55 @@ interface DesignCanvasProps {
     onToolAction?: (option?: ActionOption) => void
 }
 
-export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
-    const {componentNode, selectOnChange, onToolAction, windowCanvas} = props
-    const [content, setContent] = useState<React.ReactNode>(null)
-    const canvasRef = useRef<HTMLDivElement | null>(null)
+// 新增自定义 hook
+const useNodeState = () => {
     const [selectedEl, setSelectedEl] = useState<HTMLDivElement | null>(null)
     const [hoverEl, setHoverEl] = useState<HTMLDivElement | null>(null)
     const [hoverNode, setHoverNode] = useState<ComponentNode | null>(null)
     const [selectNode, setSelectNode] = useState<ComponentNode | null>(null)
+
+    const resetNodes = useCallback(() => {
+        setSelectNode(null)
+        setHoverNode(null)
+    }, [])
+
+    return {
+        selectedEl,
+        setSelectedEl,
+        hoverEl,
+        setHoverEl,
+        hoverNode,
+        setHoverNode,
+        selectNode,
+        setSelectNode,
+        resetNodes
+    }
+}
+
+export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
+    const {componentNode, selectOnChange, onToolAction, windowCanvas} = props
+    const [content, setContent] = useState<React.ReactNode>(null)
+    const canvasRef = useRef<HTMLDivElement | null>(null)
+
+    const {
+        selectedEl,
+        setSelectedEl,
+        hoverEl,
+        setHoverEl,
+        hoverNode,
+        setHoverNode,
+        selectNode,
+        setSelectNode,
+        resetNodes
+    } = useNodeState()
 
     const buildEngine = useMemo(() => {
         return new BuildEngine()
     }, [])
 
     useEffect(() => {
-        setSelectNode(null)
-        setHoverNode(null)
-    }, [componentNode])
+        resetNodes()
+    }, [componentNode, resetNodes])
 
     const onAction = (type: ActionType) => {
         onToolAction?.({type, payload: selectNode})
@@ -111,34 +143,46 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
         } catch (error: unknown) {
             return <div>构建出错：{(error as Error).message}</div>
         }
-    }, [componentNode, buildEngine, selectOnChange])
+    }, [
+        componentNode,
+        buildEngine,
+        selectOnChange,
+        setHoverEl,
+        setHoverNode,
+        setSelectNode,
+        setSelectedEl
+    ])
 
     useEffect(() => {
         renderComponent.then(setContent)
     }, [renderComponent, componentNode])
 
-    const HoverMask = useCallback(() => {
-        if (hoverEl && hoverNode?.id && hoverNode?.id !== selectNode?.id) {
-            return (
-                <ComponentNodeHover
-                    element={hoverEl!}
-                    id={hoverNode?.id}
-                    name={hoverNode.name}
-                    windowCanvas={windowCanvas}
-                />
-            )
+    // 简化 hover 遮罩层渲染逻辑
+    const renderHoverMask = useMemo(() => {
+        if (!hoverEl || !hoverNode?.id || hoverNode.id === selectNode?.id) {
+            return null
         }
-        return null
+
+        return (
+            <ComponentNodeHover
+                element={hoverEl}
+                id={hoverNode.id}
+                name={hoverNode.name}
+                windowCanvas={windowCanvas}
+            />
+        )
     }, [hoverEl, hoverNode, selectNode, windowCanvas])
 
     return (
         <>
-            {HoverMask()}
+            {/* 新增 hover 遮罩层渲染 */}
+            {renderHoverMask}
 
+            {/* 新增选中节点渲染 */}
             {selectedEl && selectNode?.id && (
                 <ComponentNodeSelect
                     element={selectedEl}
-                    id={selectNode?.id}
+                    id={selectNode.id}
                     name={selectNode.name}
                     canvasRef={canvasRef}
                     onAction={onAction}
@@ -146,12 +190,7 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
                 />
             )}
 
-            <div
-                ref={canvasRef}
-                style={{
-                    height: '100%'
-                }}
-            >
+            <div ref={canvasRef} style={{height: '100%'}}>
                 {content}
             </div>
         </>
