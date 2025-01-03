@@ -1,7 +1,8 @@
-import {FC, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {FC, useEffect, useMemo, useRef, useState} from 'react'
 import NameToolPanel from '../action-tools/name-tool-panel'
 import Material from '@core/material'
 import {calcRelativePosition} from '@core/utils'
+import {ComponentNode} from '@/core/meta/component-node'
 
 const material = new Material()
 material.init()
@@ -12,13 +13,9 @@ export type ComponentNodeHoverProps = {
      */
     element: HTMLElement
     /**
-     * 当前hover的组件的id
+     * 当前hover的组件
      */
-    id: string
-    /**
-     * 当前hover的组件的名称
-     */
-    name: string
+    node: ComponentNode
     /**
      * 画布的dom元素
      */
@@ -34,7 +31,7 @@ type Position = {
 }
 
 export const ComponentNodeHover: FC<ComponentNodeHoverProps> = (props) => {
-    const {element, id, name, windowCanvas} = props
+    const {element, node, windowCanvas} = props
     const [rect, setRect] = useState<Position>({
         left: 0,
         top: 0,
@@ -42,19 +39,21 @@ export const ComponentNodeHover: FC<ComponentNodeHoverProps> = (props) => {
         height: 0,
         display: 'none'
     })
-
+    const {name, id} = node
     const nameToolRef = useRef<HTMLDivElement>(null)
+    const isPage = node.name === 'Page'
 
     useEffect(() => {
         function calcMask() {
             const position = calcRelativePosition(element, windowCanvas)
-            setRect({
+            setRect((state) => ({
+                ...state,
                 ...position,
                 display: 'block'
-            })
+            }))
         }
         calcMask()
-    }, [id, element, windowCanvas])
+    }, [node, element, windowCanvas])
 
     // 计算nameTool的位置
     const calcNameToolPosition = useMemo(() => {
@@ -65,15 +64,14 @@ export const ComponentNodeHover: FC<ComponentNodeHoverProps> = (props) => {
         const {left, top} = rect
 
         const toolLeft = left
-        const toolTop =
-            name === 'Page' ? top : Math.max(0, top - (toolHeight + 2))
+        const toolTop = isPage ? top : Math.max(0, top - (toolHeight + 2))
 
         return {
             display: 'block',
             top: toolTop,
             left: toolLeft
         }
-    }, [rect, nameToolRef, name])
+    }, [rect, nameToolRef, node])
 
     const componentId = element.getAttribute('component-id')
     const {description, icon} = material.materialMap.get(name)!

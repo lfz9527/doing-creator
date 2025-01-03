@@ -68,6 +68,20 @@ type Action = {
      * @returns
      */
     moveComponent: (targetId: string, curComponentId: string) => void
+
+    /**
+     * 删除组件
+     * @param id 组件id
+     * @returns
+     */
+    deleteComponent: (id: string) => void
+    /**
+     * 改变组件锁定状态锁定组件
+     * @param id 组件id
+     * @param value 锁定状态
+     * @returns
+     */
+    changeLockComponent: (id: string, value?: boolean) => void
 }
 
 const useMaterial = create<componentsInfo & Action>((set, get) => ({
@@ -85,7 +99,55 @@ const useMaterial = create<componentsInfo & Action>((set, get) => ({
     initCanvasComponent: (component) => {
         set({
             canvasComponent: component,
-            components:[]
+            components: []
+        })
+    },
+    changeLockComponent: (id, value) => {
+        set((state) => {
+            const {component} = findNodeAndParent(id, state.components)
+            const isBooleanValue = typeof value === 'boolean'
+            
+            if (component) {
+                component.isLock = isBooleanValue ? isBooleanValue : !component.isLock
+            }
+            return {components: [...state.components]}
+        })
+    },
+    deleteComponent: (id) => {
+        set((state) => {
+            const {parentComponent} = findNodeAndParent(id, state.components)
+
+            // 从根组件列表中删除
+            const deleteFromRoot = () => {
+                const index = state.components.findIndex(
+                    (item) => item.id === id
+                )
+                if (index !== -1) {
+                    state.components.splice(index, 1)
+                }
+            }
+
+            // 从父组件的子组件中删除
+            const deleteFromParent = (parent: ComponentNode) => {
+                const index = parent.children?.findIndex(
+                    (item) => item.id === id
+                )
+                if (index && index !== -1) {
+                    parent.children?.splice(index, 1)
+                }
+            }
+
+            if (!parentComponent) {
+                deleteFromRoot()
+            } else {
+                // 如果父组件是画布组件，需要同时从根组件列表中删除
+                if (parentComponent.id === state.canvasComponent?.id) {
+                    deleteFromRoot()
+                }
+                deleteFromParent(parentComponent)
+            }
+
+            return {components: [...state.components]}
         })
     },
     addComponent: (component, parentId) => {

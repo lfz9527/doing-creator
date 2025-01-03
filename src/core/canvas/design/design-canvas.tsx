@@ -9,6 +9,7 @@ import {ComponentNodeSelect} from './component-node-select'
 import LayoutEmpty from './layout-empty'
 import {BuildEngine} from '@core/engine'
 import {ActionType, ActionOption} from '@core/canvas/action-tools/type'
+import {findNodeAndParent} from '@/utils'
 
 interface DesignCanvasProps {
     /**
@@ -35,11 +36,7 @@ const useNodeState = () => {
     const [hoverEl, setHoverEl] = useState<HTMLDivElement | null>(null)
     const [hoverNode, setHoverNode] = useState<ComponentNode | null>(null)
     const [selectNode, setSelectNode] = useState<ComponentNode | null>(null)
-
-    const resetNodes = useCallback(() => {
-        setSelectNode(null)
-        setHoverNode(null)
-    }, [])
+    const curAction = useRef<ActionType | null>(null)
 
     return {
         selectedEl,
@@ -50,7 +47,7 @@ const useNodeState = () => {
         setHoverNode,
         selectNode,
         setSelectNode,
-        resetNodes
+        curAction
     }
 }
 
@@ -68,18 +65,73 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
         setHoverNode,
         selectNode,
         setSelectNode,
-        resetNodes
+        curAction
     } = useNodeState()
 
     const buildEngine = useMemo(() => {
         return new BuildEngine()
     }, [])
 
+    // 选中节点的方法
+    const activeComponentNode = (
+        path: string,
+        id: string,
+        element: HTMLDivElement,
+        cNode: ComponentNode
+    ) => {
+        selectOnChange?.(path, id)
+        setSelectedEl(element!)
+        setSelectNode(() => cNode)
+    }
+
+    // 重置节点
+    const resetNodes = useCallback(() => {
+        // 如果不是锁定节点，就重置选中节点
+        if (curAction.current !== ActionType.LOCK_NODE) {
+            curAction.current = null
+            setSelectNode(null)
+        }
+        setHoverNode(null)
+    }, [])
+
+    // 重置选中的节点
+    const resetSelectNode = () => {
+        if (curAction.current === ActionType.LOCK_NODE) {
+            const {component} = findNodeAndParent(selectNode?.id || '', [
+                componentNode
+            ])    
+            setSelectNode((state) => ({
+                ...state,
+                ...component,
+            }))
+        }
+    }
+
+
+
     useEffect(() => {
         resetNodes()
+        resetSelectNode()
     }, [componentNode, resetNodes])
 
     const onAction = (type: ActionType) => {
+        if (type === ActionType.SELECT_NODE_PARENT) {
+            const {parentComponent} = findNodeAndParent(selectNode?.id || '', [
+                componentNode
+            ])
+            const parentElement = document.querySelector(
+                `[component-id="${parentComponent.id}"]`
+            ) as HTMLDivElement
+            const path = parentElement.getAttribute('node-path')!
+            activeComponentNode(
+                path,
+                parentComponent.id,
+                parentElement!,
+                parentComponent
+            )
+        }
+        // 存储当前的action类型
+        curAction.current = type
         onToolAction?.({type, payload: selectNode})
     }
 
@@ -107,9 +159,13 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
                         nodePath: path,
                         id,
                         onClick: (divRef) => {
-                            selectOnChange?.(path, id)
-                            setSelectedEl(divRef!)
-                            setSelectNode(componentNode)
+                            curAction.current = null
+                            activeComponentNode(
+                                path,
+                                id,
+                                divRef!,
+                                componentNode
+                            )
                         },
 
                         onMouseOver(ref) {
@@ -162,12 +218,10 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
         if (!hoverEl || !hoverNode?.id || hoverNode.id === selectNode?.id) {
             return null
         }
-
         return (
             <ComponentNodeHover
                 element={hoverEl}
-                id={hoverNode.id}
-                name={hoverNode.name}
+                node={hoverNode}
                 windowCanvas={windowCanvas}
             />
         )
@@ -182,8 +236,7 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
             {selectedEl && selectNode?.id && (
                 <ComponentNodeSelect
                     element={selectedEl}
-                    id={selectNode.id}
-                    name={selectNode.name}
+                    node={selectNode}
                     canvasRef={canvasRef}
                     onAction={onAction}
                     windowCanvas={windowCanvas}

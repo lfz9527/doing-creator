@@ -71,6 +71,7 @@ export const ComponentNodeDesignWrapper: FC<
             style={{...style}}
             ref={ref}
             component-id={id}
+            node-path={nodePath}
             onClick={(event) => {
                 event.stopPropagation()
                 onClick(ref.current)
