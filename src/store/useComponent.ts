@@ -106,7 +106,7 @@ const useMaterial = create<componentsInfo & Action>((set, get) => ({
         set((state) => {
             const {component} = findNodeAndParent(id, state.components)
             const isBooleanValue = typeof value === 'boolean'
-            
+
             if (component) {
                 component.isLock = isBooleanValue ? isBooleanValue : !component.isLock
             }
@@ -146,37 +146,35 @@ const useMaterial = create<componentsInfo & Action>((set, get) => ({
                 }
                 deleteFromParent(parentComponent)
             }
-
             return {components: [...state.components]}
         })
     },
     addComponent: (component, parentId) => {
         set((state) => {
-            if (parentId) {
-                component.parentId = parentId
+            if(!parentId){
+                return {
+                    components: [...state.components]
+                }
+            }
 
-                if (parentId === state.canvasComponent?.id) {
-                    return {
-                        components: [...state.components, component]
-                    }
-                } else {
-                    const {component: targetCom} = findNodeAndParent(
-                        parentId,
-                        state.components
-                    )
-
-                    if (!targetCom.children) {
-                        targetCom.children = []
-                    }
-                    targetCom.children.push(component)
+            if(parentId === state.canvasComponent?.id){
+                return {
+                    components: [...state.components, component]
                 }
             } else {
-                component.parentId = parentId
-                return {components: [...state.components]}
+                const {component: targetCom} = findNodeAndParent(
+                    parentId,
+                    state.components
+                )
+                if (!targetCom.children) {
+                    targetCom.children = []
+                }
+                targetCom.children.push(component)
             }
             return {
-                components: [...state.components, component]
+                components: [...state.components]
             }
+
         })
     },
     moveComponent: (targetId, curComponentId) => {

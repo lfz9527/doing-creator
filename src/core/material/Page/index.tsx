@@ -1,29 +1,14 @@
-import {FC, useEffect} from 'react'
-import {useDrop} from '@/hooks'
+import {FC, PropsWithChildren} from 'react'
 
 type Props = {
     name: string
     id: string
-    children?: React.ReactNode
     [key: string]: any
 }
 
-const Page: FC<Props> = (props) => {
-    const {children, id, name} = props
-
-    const {drop, canDrop} = useDrop({
-        id,
-        name,
-        path: ''
-    })
-
-    useEffect(() => {
-        console.log(canDrop)
-    }, [canDrop])
-
+const Page: FC<PropsWithChildren<Props>> = ({children, ...props}) => {
     return (
         <div
-            ref={drop}
             {...props}
             style={{
                 height: '100%'

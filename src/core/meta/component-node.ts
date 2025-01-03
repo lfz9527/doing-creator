@@ -1,5 +1,5 @@
 
-import {ComponentNodePropType,ComponentBaseType} from './types'
+import {ComponentNodePropType,ComponentBaseType,materialCateType} from './types'
 
 /**
  * 组件节点
@@ -28,7 +28,7 @@ export type ComponentNode = {
     /**
      * 组件分类
      */
-    category: string
+    category: materialCateType
     /**
      * 组件节点唯一名称
      */

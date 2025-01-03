@@ -6,7 +6,6 @@ import {
 } from './component-node-design-wrapper'
 import {ComponentNodeHover} from './component-node-hover'
 import {ComponentNodeSelect} from './component-node-select'
-import LayoutEmpty from './layout-empty'
 import {BuildEngine} from '@core/engine'
 import {ActionType, ActionOption} from '@core/canvas/action-tools/type'
 import {findNodeAndParent} from '@/utils'
@@ -99,15 +98,13 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
         if (curAction.current === ActionType.LOCK_NODE) {
             const {component} = findNodeAndParent(selectNode?.id || '', [
                 componentNode
-            ])    
+            ])
             setSelectNode((state) => ({
                 ...state,
-                ...component,
+                ...component
             }))
         }
     }
-
-
 
     useEffect(() => {
         resetNodes()
@@ -120,7 +117,7 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
                 componentNode
             ])
             const parentElement = document.querySelector(
-                `[component-id="${parentComponent.id}"]`
+                `[data-component-id="${parentComponent.id}"]`
             ) as HTMLDivElement
             const path = parentElement.getAttribute('node-path')!
             activeComponentNode(
@@ -151,13 +148,18 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
 
                     // 不加Wrapper的原始构造后的组件
                     const originReactComp = (
-                        <ComponentConstructor key={path + id} {...props}>
+                        <ComponentConstructor
+                            key={path + id}
+                            {...props}
+                        >
                             {children}
                         </ComponentConstructor>
                     )
                     const wrapperProps: ComponentNodeDesignWrapperProps = {
                         nodePath: path,
                         id,
+                        componentName: componentNode.name,
+                        componentCategory: category,
                         onClick: (divRef) => {
                             curAction.current = null
                             activeComponentNode(
@@ -182,16 +184,7 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
                             key={path + props.id}
                             {...wrapperProps}
                         >
-                            {/* 布局组件默认给给空 */}
-                            {category === 'layout' ? (
-                                children ? (
-                                    originReactComp
-                                ) : (
-                                    <LayoutEmpty id={id} />
-                                )
-                            ) : (
-                                originReactComp
-                            )}
+                            {originReactComp}
                         </ComponentNodeDesignWrapper>
                     )
                 }
@@ -202,11 +195,6 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
     }, [
         componentNode,
         buildEngine,
-        selectOnChange,
-        setHoverEl,
-        setHoverNode,
-        setSelectNode,
-        setSelectedEl
     ])
 
     useEffect(() => {

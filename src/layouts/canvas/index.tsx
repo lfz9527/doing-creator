@@ -57,7 +57,6 @@ const Canvas = () => {
         const {id} = payload
 
         if (!(type && id)) return
-
         const {path} = curComponentInfo
         const parentPath = path.split('/').slice(0, -1).join('/')
 

@@ -89,6 +89,7 @@ export const ComponentNodeSelect: FC<ComponentNodeSelectProps> = ({
         
         let toolTop = 0
         if (isPage) {
+            toolLeft = toolLeft -12
             toolTop = toolTop + 12
         } else {
             const preferredTop = top - (tHeight + 2)
@@ -150,7 +151,7 @@ export const ComponentNodeSelect: FC<ComponentNodeSelectProps> = ({
         })
     }, [node])
 
-    const componentId = element.getAttribute('component-id')
+    const componentId = element.getAttribute('data-component-id')
     const {description, icon} = material.materialMap.get(name)!
     if (componentId === id) {
         return (

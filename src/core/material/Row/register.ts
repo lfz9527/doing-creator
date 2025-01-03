@@ -7,9 +7,9 @@ export default (ctx: MaterialContext) => {
     ctx.registerMater(name, {
         name,
         icon: '',
-        description: '栅格布局',
+        description: '栅格行布局',
         component: Row,
-        allowDrag: ['Page'],
+        allowDrag: ['Page','Row','Col'],
         componentType: 'static',
         category: 'layout',
         allowDrop: true,

@@ -29,7 +29,7 @@ const ComponentPanel = () => {
                 category: dropResult.category,
                 isLock: false,
                 children: [],
-                id: String(new Date().getTime()),
+                id: String(new Date().getTime() + '_' + dropResult.name),
                 parentId
             }
             insertComponent('', parentId, node)

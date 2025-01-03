@@ -1,6 +1,7 @@
 import React from 'react'
 import {
     ComponentNodePropType,
+    baseComponentNodePropType,
     materialCateType,
     ComponentBaseType
 } from './types'
@@ -10,7 +11,9 @@ import {
  */
 export type MaterialPropType = {
     key: string
-    value: ComponentNodePropType
+    value: ComponentNodePropType,
+    default?:baseComponentNodePropType
+    description?:string
 }
 
 /**

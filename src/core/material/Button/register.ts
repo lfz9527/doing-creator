@@ -9,7 +9,7 @@ export default (ctx: MaterialContext) => {
         icon: '',
         description: '按钮',
         component: Button,
-        allowDrag: ['Page'],
+        allowDrag: ['Page','Row'],
         componentType: 'static',
         category: 'static',
         defaultProps: [

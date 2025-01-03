@@ -73,8 +73,9 @@ export const ComponentNodeHover: FC<ComponentNodeHoverProps> = (props) => {
         }
     }, [rect, nameToolRef, node])
 
-    const componentId = element.getAttribute('component-id')
+    const componentId = element.getAttribute('data-component-id')
     const {description, icon} = material.materialMap.get(name)!
+
     if (componentId === id) {
         return (
             <>
