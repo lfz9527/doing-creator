@@ -80,7 +80,7 @@ export const ComponentNodeHover: FC<ComponentNodeHoverProps> = (props) => {
             <>
                 <div
                     ref={nameToolRef}
-                    className='absolute z-[100]'
+                    className='absolute z-[100] pointer-events-none'
                     style={{
                         ...calcNameToolPosition
                     }}

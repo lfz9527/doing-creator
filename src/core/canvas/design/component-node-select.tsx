@@ -1,4 +1,4 @@
-import {FC, useEffect, useState, useCallback, useRef, useMemo} from 'react'
+import {FC, useEffect, useState, useRef, useMemo, useCallback} from 'react'
 import {ComponentNode} from '@/core/meta/component-node'
 import {useResizeObserver} from '@core/hooks'
 import NameToolPanel from '../action-tools/name-tool-panel'
@@ -53,6 +53,7 @@ export const ComponentNodeSelect: FC<ComponentNodeSelectProps> = ({
 }) => {
     const {name, id} = node
     const isPage = name === 'Page'
+
     const nameToolRef = useRef<HTMLDivElement>(null)
     const [rect, setRect] = useState<Position>({
         left: 0,
@@ -64,61 +65,67 @@ export const ComponentNodeSelect: FC<ComponentNodeSelectProps> = ({
 
     const [actionBar, setActionBar] = useState<actionBarItemList>(actionBarList)
 
-    // 跟新mask的位置
-    const updateRect = useCallback(() => {
-        if (element) {
-            const {width, left, top, height} = calcRelativePosition(
-                element,
-                windowCanvas
-            )
-            setRect((state) => ({
-                ...state,
-                width,
-                left,
-                top,
-                height
-            }))
+    // 更新tool初始位置
+    const updateToolPosition = (top = '0', left = '0', display = 'flex') => {
+        if (nameToolRef?.current) {
+            nameToolRef.current.style.left = left
+            nameToolRef.current.style.top = top
+            nameToolRef.current.style.display = display
         }
-    }, [element])
+    }
 
-    // 计算nameTool的位置
-    const calcNameToolPosition = useMemo(() => {
+    const calcToolPosition = ({width, left, top}:{
+        width: number,
+        left: number,
+        top: number
+    }) => {
         if (!nameToolRef.current) {
-            return {display: 'none', top: 0, left: 0}
+            return
         }
         const {width: tWidth, height: tHeight} =
             nameToolRef.current.getBoundingClientRect()
-        const {width, left, top} = rect
 
-        let tooLeft = left + width - tWidth - (isPage ? 12 : 3)
-        let tooTop = 0
+        let toolLeft = left + width - tWidth
+        
+        let toolTop = 0
         if (isPage) {
-            tooLeft = tooLeft + 12
-            tooTop = tooTop + 12
+            toolTop = toolTop + 12
         } else {
-            tooLeft = tooLeft + 3
             const preferredTop = top - (tHeight + 2)
-            tooTop = preferredTop <= 40 ? top : preferredTop
+            if(preferredTop <= 40) {
+                toolTop = top + 3
+            } else {
+                toolTop = preferredTop
+            }
+         
         }
-
         // 有些组件比较窄，直接从左开始显示
-        if(tWidth >= width) {
-            tooLeft = left
+        if (tWidth >= width) {
+            toolLeft = left
         }
+        updateToolPosition(toolTop + 'px', toolLeft + 'px', 'flex')
+    }
 
-        return {
-            display: 'flex',
-            left: tooLeft + 'px',
-            top: tooTop + 'px'
-        }
-    }, [rect])
+    // 更新mask的位置
+    const updateRect = useCallback(() => {
+        // 先重置位置
+        updateToolPosition()
+
+        const position = calcRelativePosition(element, windowCanvas)
+        calcToolPosition(position)
+        setRect((state) => ({
+            ...state,
+            ...position
+        }))
+    }, [element,node])
 
     const {observe} = useResizeObserver(updateRect)
 
     useEffect(() => {
-        updateRect()
-        observe([canvasRef.current!, element])
-    }, [node, canvasRef.current, actionBar])
+        if (canvasRef.current && element) {
+            observe([canvasRef.current, element])
+        }
+    }, [element])
 
     useEffect(() => {
         setActionBar(() => {
@@ -152,9 +159,7 @@ export const ComponentNodeSelect: FC<ComponentNodeSelectProps> = ({
                     ref={nameToolRef}
                     className='absolute z-[100]'
                     style={{
-                        ...calcNameToolPosition,
-                        gap: 4,
-     
+                        gap: 4
                     }}
                 >
                     <NameToolPanel name={description} icon={icon} />
