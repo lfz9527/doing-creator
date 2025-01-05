@@ -5,7 +5,9 @@ import React, {
     useEffect,
     useMemo,
     useRef,
-    useState
+    useState,
+    isValidElement,
+    cloneElement
 } from 'react'
 import {materialCateType} from '@core/meta'
 
@@ -42,6 +44,19 @@ export type ComponentNodeDesignWrapperProps = {
      * 鼠标移出事件
      */
     onMouseOut?: (ref?: HTMLDivElement) => void
+}
+
+export type ComponentNodeWrapperAttribute = {
+    key: string
+    nodePath: string
+    handleClick: (event: React.MouseEvent, current?: boolean) => void
+    handleMouseOver: (event: React.MouseEvent, current?: boolean) => void
+    handleMouseOut: (event: React.MouseEvent, current?: boolean) => void
+    isOverCurrent: boolean
+    canDrop: boolean
+    ComponentNodeDrop: React.ComponentType<any>
+    maskRef: any
+    [key: string]: any // 允许其他属性通过
 }
 
 const elTagMap = new Map([
@@ -97,11 +112,7 @@ export const ComponentNodeDesignWrapper: FC<
         // 布局组件使用 contents 使其包装器不影响实际布局
         // Page 组件使用 initial
         // 其他组件根据其 HTML 标签类型决定显示方式
-        const display = isLayout
-            ? 'contents'
-            : isPage
-              ? 'initial'
-              : realDisplay || 'initial'
+        const display = isPage ? 'initial' : realDisplay || 'initial'
 
         return {
             ...baseStyle,
@@ -110,37 +121,42 @@ export const ComponentNodeDesignWrapper: FC<
     }, [componentName, targetNodeHtml, isLayout, isPage])
 
     // 事件处理器
-    const handleClick = (event: React.MouseEvent) => {
+    const handleClick: ComponentNodeWrapperAttribute['handleClick'] = (
+        event
+    ) => {
         event.stopPropagation()
-        onClick(targetNodeHtml as HTMLDivElement)
+        onClick(ref.current)
     }
 
-    const handleMouseOver = (event: React.MouseEvent<HTMLDivElement>) => {
+    const handleMouseOver: ComponentNodeWrapperAttribute['handleMouseOver'] = (
+        event
+    ) => {
         event.stopPropagation()
-        onMouseOver(targetNodeHtml as HTMLDivElement)
+        onMouseOver(ref.current)
     }
 
-    const handleMouseOut = (event: React.MouseEvent<HTMLDivElement>) => {
+    const handleMouseOut: ComponentNodeWrapperAttribute['handleMouseOut'] = (
+        event
+    ) => {
         event.stopPropagation()
         onMouseOut()
     }
-
     // 对于布局组件，我们可以直接渲染内容
     if (isLayout) {
-        return (
-            <div
-                key={nodePath + '_wrapper_key'}
-                style={wrapperStyle}
-                ref={mgRef}
-                node-path={nodePath}
-                onClick={handleClick}
-                onMouseOver={handleMouseOver}
-                onMouseOut={handleMouseOut}
-            >
-                {isOverCurrent && canDrop && <ComponentNodeDrop />}
-                {children}
-            </div>
-        )
+        return isValidElement(children)
+            ? cloneElement(children, {
+                  key: nodePath + '_wrapper_key',
+                  nodePath,
+                  handleClick,
+                  handleMouseOver,
+                  handleMouseOut,
+                  maskRef: mgRef,
+                  isOverCurrent,
+                  canDrop,
+                  ComponentNodeDrop,
+                  ...children.props
+              } as ComponentNodeWrapperAttribute)
+            : children
     }
 
     return (

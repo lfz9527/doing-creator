@@ -1,5 +1,5 @@
 import Button from '.'
-import {MaterialContext} from '../types'
+import {MaterialContext} from '@core/material/types'
 
 const name = Button.name
 
@@ -9,19 +9,21 @@ export default (ctx: MaterialContext) => {
         icon: '',
         description: '按钮',
         component: Button,
-        allowDrag: ['Page','Row'],
+        allowDrag: ['Page', 'Row'],
         componentType: 'static',
         category: 'static',
         defaultProps: [
             {
                 key: 'value',
                 value: 'Hello World',
+                type: 'string'
             },
             {
                 key: 'type',
                 value: 'primary',
+                type: 'string'
             }
         ],
-        allowDrop: true,
+        allowDrop: true
     })
 }

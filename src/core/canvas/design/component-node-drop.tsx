@@ -9,7 +9,7 @@ const ComponentNodeDrop = () => {
                 height: '100%',
                 border: '2px dashed #1890ff',
                 backgroundColor: 'rgba(24, 144, 255, 0.15)',
-                zIndex: 100000,
+                zIndex: 100,
                 pointerEvents: 'none'
             }}
         />

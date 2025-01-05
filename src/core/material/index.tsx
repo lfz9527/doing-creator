@@ -1,6 +1,6 @@
 // 整个物料库的入口文件
 import {MaterialModule} from './types'
-import {MaterialConfig} from '../meta/material'
+import {MaterialConfig} from '@core/meta'
 
 class Material {
     /**
@@ -22,7 +22,7 @@ class Material {
     async injectMaterial() {
         this.clearMaterial()
         // 获取所有的物料库
-        const modules = import.meta.glob('./*/register.ts', {
+        const modules = import.meta.glob('./**/*/register.ts', {
             eager: true
         })
         // 遍历所有的物料库

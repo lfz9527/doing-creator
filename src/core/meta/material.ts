@@ -6,14 +6,17 @@ import {
     ComponentBaseType
 } from './types'
 
+export type propValueTypeValue = 'string' | 'number' | 'boolean' | 'function'
+
 /**
  * 物料属性
  */
 export type MaterialPropType = {
     key: string
-    value: ComponentNodePropType,
-    default?:baseComponentNodePropType
-    description?:string
+    value: ComponentNodePropType
+    type: propValueTypeValue
+    default?: baseComponentNodePropType
+    description?: string
 }
 
 /**
@@ -55,7 +58,7 @@ export type MaterialConfig = {
     /**
      * 是否允许放置
      */
-    allowDrop: boolean,
+    allowDrop: boolean
     /**
      * 子组件
      */
