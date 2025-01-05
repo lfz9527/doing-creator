@@ -91,6 +91,7 @@ export const ComponentNodeHover: FC<ComponentNodeHoverProps> = (props) => {
                 <div
                     className='absolute z-[100] pointer-events-none'
                     style={{
+                        backgroundColor: 'rgba(24, 144, 255, 0.05)',
                         border: '2px dotted blue',
                         ...rect
                     }}

@@ -127,6 +127,8 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
                 parentComponent
             )
         }
+        console.log('selectNode', selectNode)
+
         // 存储当前的action类型
         curAction.current = type
         onToolAction?.({type, payload: selectNode})
@@ -148,10 +150,7 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
 
                     // 不加Wrapper的原始构造后的组件
                     const originReactComp = (
-                        <ComponentConstructor
-                            key={path + id}
-                            {...props}
-                        >
+                        <ComponentConstructor key={path + id} {...props}>
                             {children}
                         </ComponentConstructor>
                     )
@@ -192,10 +191,7 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
         } catch (error: unknown) {
             return <div>构建出错：{(error as Error).message}</div>
         }
-    }, [
-        componentNode,
-        buildEngine,
-    ])
+    }, [componentNode, buildEngine])
 
     useEffect(() => {
         renderComponent.then(setContent)
@@ -231,7 +227,15 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
                 />
             )}
 
-            <div ref={canvasRef} style={{height: '100%'}}>
+            <div
+                ref={canvasRef}
+                style={{
+                    height: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}
+            >
                 {content}
             </div>
         </>

@@ -86,7 +86,8 @@ export const ComponentNodeDesignWrapper: FC<
     const {drop, canDrop, isOverCurrent} = useDrop({
         id: id,
         name: componentName,
-        path: nodePath
+        path: nodePath,
+        element: targetNodeHtml
     })
 
     const mgRef = useMergeRefs(ref, drop)
@@ -102,7 +103,6 @@ export const ComponentNodeDesignWrapper: FC<
         const baseStyle = {
             boxSizing: 'border-box'
         } as const
-
         // 其他组件使用原来的样式
         const tagName = targetNodeHtml?.nodeName
         const realDisplay = Array.from(elTagMap).find(([, value]) =>
@@ -112,10 +112,13 @@ export const ComponentNodeDesignWrapper: FC<
         // 布局组件使用 contents 使其包装器不影响实际布局
         // Page 组件使用 initial
         // 其他组件根据其 HTML 标签类型决定显示方式
-        const display = isPage ? 'initial' : realDisplay || 'initial'
+        // const display = isPage ? 'inline-block' : realDisplay || 'inline-block'
+        const display = realDisplay || 'inline-block'
 
         return {
             ...baseStyle,
+            width: display === 'block' ? '100%' : 'auto',
+            height: display === 'block' ? '100%' : 'auto',
             display
         }
     }, [componentName, targetNodeHtml, isLayout, isPage])

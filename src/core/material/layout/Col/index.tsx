@@ -26,7 +26,6 @@ const Col: FC<PropsWithChildren<ColProps & ComponentNodeWrapperAttribute>> = (
         flexGrow: 0,
         flexShrink: 0,
         flexBasis: `calc(${width} - ${gap / 2}px)`,
-        maxWidth: width,
         marginLeft: offset > 0 ? `${getCols(offset)}%` : undefined,
         height: children ? 'auto' : '100px'
     }

@@ -108,7 +108,9 @@ const useMaterial = create<componentsInfo & Action>((set, get) => ({
             const isBooleanValue = typeof value === 'boolean'
 
             if (component) {
-                component.isLock = isBooleanValue ? isBooleanValue : !component.isLock
+                component.isLock = isBooleanValue
+                    ? isBooleanValue
+                    : !component.isLock
             }
             return {components: [...state.components]}
         })
@@ -116,6 +118,8 @@ const useMaterial = create<componentsInfo & Action>((set, get) => ({
     deleteComponent: (id) => {
         set((state) => {
             const {parentComponent} = findNodeAndParent(id, state.components)
+
+            console.log(parentComponent, 12)
 
             // 从根组件列表中删除
             const deleteFromRoot = () => {
@@ -132,7 +136,8 @@ const useMaterial = create<componentsInfo & Action>((set, get) => ({
                 const index = parent.children?.findIndex(
                     (item) => item.id === id
                 )
-                if (index && index !== -1) {
+                console.log(index)
+                if (index !== undefined && index !== -1) {
                     parent.children?.splice(index, 1)
                 }
             }
@@ -146,18 +151,19 @@ const useMaterial = create<componentsInfo & Action>((set, get) => ({
                 }
                 deleteFromParent(parentComponent)
             }
+
             return {components: [...state.components]}
         })
     },
     addComponent: (component, parentId) => {
         set((state) => {
-            if(!parentId){
+            if (!parentId) {
                 return {
                     components: [...state.components]
                 }
             }
 
-            if(parentId === state.canvasComponent?.id){
+            if (parentId === state.canvasComponent?.id) {
                 return {
                     components: [...state.components, component]
                 }
@@ -174,7 +180,6 @@ const useMaterial = create<componentsInfo & Action>((set, get) => ({
             return {
                 components: [...state.components]
             }
-
         })
     },
     moveComponent: (targetId, curComponentId) => {

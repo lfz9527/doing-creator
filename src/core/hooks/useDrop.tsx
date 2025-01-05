@@ -1,4 +1,3 @@
-
 // 定义组件如何接收拖拽的数据和如何响应拖拽操作
 import {useDrop as useDndDrop, DropTargetMonitor} from 'react-dnd'
 import {getAcceptDrop} from '@core/utils'
@@ -7,10 +6,13 @@ interface Props {
     id: string
     name: string
     path: string
+    element?: HTMLElement
 }
 
 const useDrop = (props: Props) => {
-    const {id, name, path} = props
+    const {id, name, path, element} = props
+    console.log(1232333, element?.children)
+
     const [{canDrop, isOverCurrent, isOver}, drop] = useDndDrop(
         {
             accept: getAcceptDrop(name),
