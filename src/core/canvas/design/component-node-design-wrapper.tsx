@@ -165,6 +165,7 @@ export const ComponentNodeDesignWrapper: FC<
             style={wrapperStyle}
             ref={mgRef}
             node-path={nodePath}
+            data-component-id={id}
             onClick={handleClick}
             onMouseOver={handleMouseOver}
             onMouseOut={handleMouseOut}

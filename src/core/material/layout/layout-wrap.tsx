@@ -25,8 +25,6 @@ const LayoutWrap: FC<PropsWithChildren<LayoutWrapProps>> = (props) => {
         isEmpty
     } = props
 
-    console.log('===', isEmpty)
-
     return (
         <div
             key={key}

@@ -11,12 +11,11 @@ const ComponentItem: FC<Props> = (props) => {
     const {icon, description, name, componentType, onDragEnd, onDragStart} =
         props
     const {materialMapConfig} = useMaterial()
-    const {canvasComponent} = useComponent()
+    const {canvasComponent, curComponentInfo} = useComponent()
 
     const materialConfig = useMemo(() => {
         return materialMapConfig.get(name)!
     }, [materialMapConfig, name])
-
 
     const [{isDragging}, drag] = useDrag({
         type: name,
@@ -53,16 +52,16 @@ const ComponentItem: FC<Props> = (props) => {
 
     const clickAddComponent = () => {
         const defaultProps = materialConfig?.defaultProps || []
-        
+        const {id} = curComponentInfo
+
         const dragOptions = {
             name,
             props: [...defaultProps] as MaterialPropType[],
             componentType: componentType as ComponentBaseType,
             category: materialConfig?.category,
             description,
-            id: canvasComponent?.id
+            id: id ? id : canvasComponent?.id
         }
-        
 
         // 拖拽结束回调
         onDragEnd(dragOptions)

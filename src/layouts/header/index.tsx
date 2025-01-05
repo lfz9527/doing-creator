@@ -1,4 +1,4 @@
-import {Button, Space, Popconfirm, Segmented} from 'antd'
+import {Button, Space, Popconfirm, Segmented, Tooltip} from 'antd'
 import SvgIcon from '@/components/svg-icon'
 import {useCanvas} from '@/store'
 import {initCanvas} from '@/utils'
@@ -45,14 +45,22 @@ const Header = () => {
 
     return (
         <div className='w-[100%] h-[48px] bg-white mb-1'>
-            <div className='flex items-center justify-between h-full'>
+            <div className='flex justify-between items-center h-full'>
                 <div></div>
                 <Space>
                     <Segmented
                         size='small'
                         options={screenOptions.map((s) => {
                             return {
-                                label: icons(s.value),
+                                label: (
+                                    <Tooltip
+                                        placement='bottom'
+                                        key={s.value}
+                                        title={s.width}
+                                    >
+                                        {icons(s.value)}
+                                    </Tooltip>
+                                ),
                                 value: s.value
                             }
                         })}

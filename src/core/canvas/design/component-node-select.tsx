@@ -74,9 +74,13 @@ export const ComponentNodeSelect: FC<ComponentNodeSelectProps> = ({
         }
     }
 
-    const calcToolPosition = ({width, left, top}:{
-        width: number,
-        left: number,
+    const calcToolPosition = ({
+        width,
+        left,
+        top
+    }: {
+        width: number
+        left: number
         top: number
     }) => {
         if (!nameToolRef.current) {
@@ -86,19 +90,14 @@ export const ComponentNodeSelect: FC<ComponentNodeSelectProps> = ({
             nameToolRef.current.getBoundingClientRect()
 
         let toolLeft = left + width - tWidth
-        
+
         let toolTop = 0
         if (isPage) {
-            toolLeft = toolLeft -12
+            toolLeft = toolLeft - 12
             toolTop = toolTop + 12
         } else {
             const preferredTop = top - (tHeight + 2)
-            if(preferredTop <= 40) {
-                toolTop = top + 3
-            } else {
-                toolTop = preferredTop
-            }
-         
+            toolTop = preferredTop <= 40 ? top : preferredTop
         }
         // 有些组件比较窄，直接从左开始显示
         if (tWidth >= width) {
@@ -118,7 +117,7 @@ export const ComponentNodeSelect: FC<ComponentNodeSelectProps> = ({
             ...state,
             ...position
         }))
-    }, [element,node])
+    }, [element, node])
 
     const {observe} = useResizeObserver(updateRect)
 
@@ -172,7 +171,7 @@ export const ComponentNodeSelect: FC<ComponentNodeSelectProps> = ({
                     )}
                 </div>
                 <div
-                    className='absolute z-[9999] pointer-events-none'
+                    className='absolute z-[100] pointer-events-none'
                     style={{
                         border: '2px solid blue',
                         ...rect,
