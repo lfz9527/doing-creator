@@ -82,6 +82,12 @@ type Action = {
      * @returns
      */
     changeLockComponent: (id: string, value?: boolean) => void
+    /**
+     * 根据id查找组件
+     * @param id 组件id
+     * @returns
+     */
+    findCurrentComponentById: (id: string) => ComponentNode | null
 }
 
 const useMaterial = create<componentsInfo & Action>((set, get) => ({
@@ -101,6 +107,10 @@ const useMaterial = create<componentsInfo & Action>((set, get) => ({
             canvasComponent: component,
             components: []
         })
+    },
+    findCurrentComponentById: (id) => {
+        const {component} = findNodeAndParent(id, get().components)
+        return component
     },
     changeLockComponent: (id, value) => {
         set((state) => {
@@ -183,13 +193,46 @@ const useMaterial = create<componentsInfo & Action>((set, get) => ({
         })
     },
     moveComponent: (targetId, curComponentId) => {
+        // @TODO 只支持从尾部插入，后续优化中间插入
         console.log('move', targetId, curComponentId)
+        set((state) => {
+            const {
+                component: curComponent,
+                parentComponent: curComponentParent
+            } = findNodeAndParent(curComponentId, state.components)
+            const curIndex = curComponentParent?.children?.findIndex(
+                (item) => item.id === curComponentId
+            )
+
+            curComponentParent?.children?.splice(curIndex!, 1)
+            // 移动到根组件下
+            if (targetId === state.canvasComponent?.id) {
+                state.components.push(curComponent!)
+            } else {
+                const {
+                    component: targetComponent,
+                    // parentComponent: targetComponentParent
+                } = findNodeAndParent(targetId, state.components)
+
+                // 移动到目标组件下
+                if (!targetComponent?.children){
+                    targetComponent.children = []
+                }
+                targetComponent.children.push(curComponent!)
+            }
+
+            return {
+                components: [...state.components]
+            }
+        })
     },
     insertComponent: (curComponentId, targetId, component) => {
         const {addComponent, moveComponent} = get()
         if (component) {
             return addComponent(component, targetId)
         }
+        if (curComponentId === get().canvasComponent?.id) return
+
         return moveComponent(targetId, curComponentId)
     }
 }))

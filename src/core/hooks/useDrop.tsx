@@ -6,13 +6,11 @@ interface Props {
     id: string
     name: string
     path: string
-    element?: HTMLElement
+    onHover?: (_: any, monitor: DropTargetMonitor) => void
 }
 
 const useDrop = (props: Props) => {
-    const {id, name, path, element} = props
-    console.log(1232333, element?.children)
-
+    const {id, name, path, onHover} = props
     const [{canDrop, isOverCurrent, isOver}, drop] = useDndDrop(
         {
             accept: getAcceptDrop(name),
@@ -28,7 +26,11 @@ const useDrop = (props: Props) => {
                     path
                 }
             },
-            // hover: (_, monitor: DropTargetMonitor) => {},
+            hover: (_, monitor: DropTargetMonitor) => {
+                if (onHover) {
+                    onHover(_, monitor)
+                }
+            },
             collect: (monitor: DropTargetMonitor) => ({
                 isOverCurrent: monitor.isOver({shallow: true}),
                 isOver: monitor.isOver(),

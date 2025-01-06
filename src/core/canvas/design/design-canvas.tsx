@@ -145,7 +145,7 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
                         children,
                         componentNode
                     } = ctx
-                    const {category} = componentNode
+                    const {category,isLock} = componentNode
                     const id = props.id.toString()
 
                     // 不加Wrapper的原始构造后的组件
@@ -157,6 +157,7 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
                     const wrapperProps: ComponentNodeDesignWrapperProps = {
                         nodePath: path,
                         id,
+                        isLock: isLock!,
                         componentName: componentNode.name,
                         componentCategory: category,
                         onClick: (divRef) => {

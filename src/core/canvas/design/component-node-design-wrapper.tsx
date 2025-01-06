@@ -10,10 +10,14 @@ import React, {
     cloneElement
 } from 'react'
 import {materialCateType} from '@core/meta'
+import {useMergeRefs, useDrop,useDrag} from '@core/hooks'
 
-import {useMergeRefs, useDrop} from '@core/hooks'
+import {
+    ComponentNodeDrop,
+    NodeDropProps
+} from '@core/canvas/design/component-node-drop'
 
-import ComponentNodeDrop from '@core/canvas/design/component-node-drop'
+import {calcRelativePosition} from '@core/utils'
 
 export type ComponentNodeDesignWrapperProps = {
     /**
@@ -28,6 +32,10 @@ export type ComponentNodeDesignWrapperProps = {
      * 节点对应的组件名称
      */
     componentName: string
+    /**
+     * 组件是锁定
+     */
+    isLock: boolean
     /**
      * 节点对应的组件分类
      */
@@ -82,15 +90,63 @@ export const ComponentNodeDesignWrapper: FC<
     const isPage = componentName === 'Page'
     const ref = useRef<HTMLDivElement | null>(null)
     const [targetNodeHtml, setTargetNodeHtml] = useState<HTMLElement>()
+    const [nodeDropPos, setNodeDropPos] = useState<NodeDropProps>({
+        width: '100%',
+        height: '100%',
+        top: 0,
+        left: 0,
+        dropType: 'center'
+    })
 
     const {drop, canDrop, isOverCurrent} = useDrop({
         id: id,
         name: componentName,
         path: nodePath,
-        element: targetNodeHtml
+        onHover() {
+            if (!ref.current) return
+            if (isPage) {
+                const currentTarget = ref.current.firstChild as HTMLElement
+                const lastChild = currentTarget?.lastChild as HTMLElement
+                if (lastChild) {
+                    const childDisplay = lastChild?.style.display
+                    const {width, left, top, height} = calcRelativePosition(
+                        lastChild,
+                        currentTarget
+                    )
+                    const inline = childDisplay === 'inline-block'
+                    const options = {
+                        width: inline ? '5px' : '100%',
+                        height: inline ? height + 'px' : '5px',
+                        top: inline ? top + 'px' : top + height + 'px',
+                        left: inline ? left + width + 'px' : 0,
+                        dropType: 'outdoor'
+                    } as NodeDropProps
+                    setNodeDropPos((state) => ({
+                        ...state,
+                        ...options
+                    }))
+                }
+            } else {
+                setNodeDropPos((state) => ({
+                    ...state,
+                    width: '100%',
+                    height: '100%',
+                    top: 0,
+                    left: 0,
+                    dropType: 'center'
+                }))
+            }
+        }
+    })    
+
+    const {drag} = useDrag({
+        id,
+        name: componentName,
+        path: nodePath,
+        canDrag: !isPage
     })
 
-    const mgRef = useMergeRefs(ref, drop)
+    const mgRef = useMergeRefs(ref, drop,drag)
 
     useEffect(() => {
         if (!ref || !ref.current) return
@@ -173,7 +229,7 @@ export const ComponentNodeDesignWrapper: FC<
             onMouseOver={handleMouseOver}
             onMouseOut={handleMouseOut}
         >
-            {isOverCurrent && canDrop && <ComponentNodeDrop />}
+            {isOverCurrent && canDrop && <ComponentNodeDrop {...nodeDropPos} />}
             {children}
         </div>
     )
