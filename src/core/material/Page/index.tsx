@@ -1,16 +1,19 @@
 import {FC, PropsWithChildren} from 'react'
 
 type Props = {
-    name: string
     id: string
+    name: string
+    backgroundColor: string
     [key: string]: any
 }
 
 const Page: FC<PropsWithChildren<Props>> = ({children, ...props}) => {
     return (
         <div
-            {...props}
+            id={props.id}
+            data-name={props.name}
             style={{
+                backgroundColor: props.backgroundColor,
                 height: '100%',
                 width: '100%'
             }}

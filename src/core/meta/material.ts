@@ -1,12 +1,27 @@
 import React from 'react'
 import {
     ComponentNodePropType,
-    baseComponentNodePropType,
     materialCateType,
     ComponentBaseType
 } from './types'
 
 export type propValueTypeValue = 'string' | 'number' | 'boolean' | 'function'
+
+export type collapseLabelKey = 'basic'
+
+export type SettingProps = Array<{
+    tabLabel: string
+    key: string
+    children: {
+        collapseLabel: string
+        key: collapseLabelKey
+        props: {
+            label: string
+            key: string
+            type: 'string' | 'color' | 'number' | 'select'
+        }[]
+    }[]
+}>
 
 /**
  * 物料属性
@@ -15,7 +30,6 @@ export type MaterialPropType = {
     key: string
     value: ComponentNodePropType
     type: propValueTypeValue
-    default?: baseComponentNodePropType
     description?: string
 }
 
@@ -59,6 +73,10 @@ export type MaterialConfig = {
      * 是否允许放置
      */
     allowDrop: boolean
+    /**
+     * 组件设置面板
+     */
+    settingTabs?: SettingProps
     /**
      * 子组件
      */

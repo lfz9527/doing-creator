@@ -127,7 +127,6 @@ export const DesignCanvas: FC<DesignCanvasProps> = (props) => {
                 parentComponent
             )
         }
-        console.log('selectNode', selectNode)
 
         // 存储当前的action类型
         curAction.current = type

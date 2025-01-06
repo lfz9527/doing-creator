@@ -12,7 +12,33 @@ export default (ctx: MaterialContext) => {
         allowDrag: [],
         componentType: 'static',
         category: 'static',
-        defaultProps: [],
         allowDrop: false,
+        defaultProps: [
+            {
+                key: 'backgroundColor',
+                value: '#fff',
+                type: 'string',
+                description: '背景色'
+            }
+        ],
+        settingTabs: [
+            {
+                tabLabel: '属性',
+                key: 'attributes',
+                children: [
+                    {
+                        collapseLabel: '基本',
+                        key: 'basic',
+                        props: [
+                            {
+                                label: '背景色',
+                                key: 'backgroundColor',
+                                type: 'color',
+                            },
+                        ]
+                    },
+                ]
+            }
+        ]
     })
 }

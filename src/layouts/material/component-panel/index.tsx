@@ -1,5 +1,5 @@
-import ComponentItem from '@/components/component-item'
-import {DragOptions} from '@/components/component-item/type'
+import ComponentItem from '@/layouts/material/component-item'
+import {DragOptions} from '@/layouts/material/component-item/type'
 import {materialCate} from '@core/enum'
 import {MaterialConfig, materialCateType, ComponentNode} from '@core/meta'
 import {formatProps} from '@core/utils'
@@ -7,7 +7,7 @@ import {useMaterial, useComponent} from '@/store'
 import {useCallback, useMemo} from 'react'
 const ComponentPanel = () => {
     const {materialMapConfig} = useMaterial()
-    const {insertComponent} = useComponent()
+    const {insertComponent,setCurComponentInfo} = useComponent()
 
     /**
      * 拖拽开始回调
@@ -33,6 +33,11 @@ const ComponentPanel = () => {
                 parentId
             }
             insertComponent('', parentId, node)
+            setCurComponentInfo({
+                id:'',
+                path:''
+            })
+
         },
         [insertComponent]
     )

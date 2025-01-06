@@ -17,35 +17,30 @@ export default (ctx: MaterialContext) => {
             {
                 key: 'cols',
                 value: 24,
-                default: 24,
                 type: 'number',
                 description: '布局总列数'
             },
             {
                 key: 'gap',
                 value: 10,
-                default: 0,
                 type: 'number',
                 description: '每一列直接的间隔'
             },
             {
                 key: 'wrap',
                 value: 'true',
-                default: 'true',
                 type: 'boolean',
                 description: '每一列直接的间隔'
             },
             {
                 key: 'justify',
                 value: 'start',
-                default: 'start',
                 type: 'string',
                 description: '排列方式'
             },
             {
                 key: 'align',
                 value: 'top',
-                default: 'top',
                 type: 'string',
                 description: '对齐方式'
             }

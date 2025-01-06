@@ -61,7 +61,13 @@ const Canvas = () => {
         const parentPath = path.split('/').slice(0, -1).join('/')
 
         const ActionMap = {
-            [ActionType.DELETE_NODE]: () => deleteComponent(id),
+            [ActionType.DELETE_NODE]: () => {
+                deleteComponent(id)
+                setCurComponentInfo({
+                    id: '',
+                    path: ''
+                })
+            },
             [ActionType.LOCK_NODE]: () => changeLockComponent(id),
             [ActionType.SELECT_NODE_PARENT]: () => {
                 const {parentComponent} = findNodeAndParent(id, components)
@@ -79,7 +85,7 @@ const Canvas = () => {
             <div
                 id={CANVAS_ID}
                 ref={canvasRef}
-                className='relative w-full overflow-auto bg-white'
+                className='relative w-full overflow-auto '
                 style={{height: 'calc(100vh - 72px)'}}
             >
                 {containerRef?.current && (

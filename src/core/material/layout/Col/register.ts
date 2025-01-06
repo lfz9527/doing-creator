@@ -17,14 +17,12 @@ export default (ctx: MaterialContext) => {
             {
                 key: 'span',
                 value: 12,
-                default: 12,
                 type: 'number',
                 description: '栅格占位格数，为 0 时相当于 display: none'
             },
             {
                 key: 'offset',
                 value: 0,
-                default: 0,
                 type: 'number',
                 description: '栅格左侧的间隔格数'
             }
