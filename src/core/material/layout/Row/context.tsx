@@ -1,6 +1,15 @@
 import {createContext, useContext} from 'react'
 
+
+export type justifyType = 'start' | 'end' | 'center' | 'space-around' | 'space-between'
+
+export type alignType = 'top' | 'middle' | 'bottom'
+
 interface RowContextType {
+    // 排列方式
+    justify: justifyType
+    // 对齐方式
+    align: alignType
     // 总行数
     cols: number
     // 间隔
@@ -16,6 +25,8 @@ interface RowContextType {
 const defaultCols = 24
 
 export const RowContext = createContext<RowContextType>({
+    justify: 'start',
+    align: 'top',
     cols: defaultCols,
     gap: 0,
     wrap: true,

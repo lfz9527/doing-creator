@@ -34,6 +34,20 @@ export default (ctx: MaterialContext) => {
                 default: 'true',
                 type: 'boolean',
                 description: '每一列直接的间隔'
+            },
+            {
+                key: 'justify',
+                value: 'start',
+                default: 'start',
+                type: 'string',
+                description: '排列方式'
+            },
+            {
+                key: 'align',
+                value: 'top',
+                default: 'top',
+                type: 'string',
+                description: '对齐方式'
             }
         ]
     })
