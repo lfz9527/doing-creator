@@ -3,10 +3,12 @@ import {RowContext} from './context'
 import type {justifyType, alignType} from './context'
 import {ComponentNodeWrapperAttribute} from '@core/canvas/design/component-node-design-wrapper'
 import LayoutWrap from '../layout-wrap'
+import {isTrue} from '@core/utils/is'
 
 interface RowProps {
     cols?: number
-    gap?: number
+    rowGap?: number
+    columnGap?: number
     wrap?: boolean
     justify?: justifyType
     align?: alignType
@@ -18,7 +20,8 @@ const Row: FC<PropsWithChildren<RowProps & ComponentNodeWrapperAttribute>> = (
     props
 ) => {
     const {
-        gap = 0,
+        rowGap = 0,
+        columnGap = 0,
         cols = 24,
         wrap = true,
         children,
@@ -29,7 +32,8 @@ const Row: FC<PropsWithChildren<RowProps & ComponentNodeWrapperAttribute>> = (
     const contextValue = useMemo(
         () => ({
             cols,
-            gap,
+            rowGap,
+            columnGap,
             wrap,
             justify,
             align,
@@ -38,9 +42,9 @@ const Row: FC<PropsWithChildren<RowProps & ComponentNodeWrapperAttribute>> = (
                 return (childCols / cols) * 100
                 // return Math.min(childCols, cols)
             },
-            getGutter: (): [number, number] => [gap, 0] // 返回水平和垂直间距
+            getGutter: (): [number, number] => [rowGap, columnGap] // 返回水平和垂直间距
         }),
-        [cols, gap, wrap]
+        [cols, rowGap, columnGap, wrap]
     )
 
     return (
@@ -49,16 +53,17 @@ const Row: FC<PropsWithChildren<RowProps & ComponentNodeWrapperAttribute>> = (
                 {...props}
                 style={{
                     display: 'flex',
-                    gap: gap,
+                    gap: `${columnGap}px ${rowGap}px`,
                     height: children ? 'auto' : '100px',
-                    flexWrap: wrap ? 'wrap' : 'no-wrap',
+                    flexWrap: isTrue(wrap) ? 'wrap' : 'nowrap',
                     justifyContent: justify,
                     alignItems:
                         align === 'top'
                             ? 'flex-start'
                             : align === 'bottom'
                               ? 'flex-end'
-                              : 'center'
+                              : 'center',
+                    overflow: 'auto'
                 }}
                 isEmpty={!children}
             >

@@ -19,6 +19,15 @@ export type SettingProps = Array<{
             label: string
             key: string
             type: 'string' | 'color' | 'number' | 'select'
+            defaultValue: ComponentNodePropType
+            controlConfig?: {
+                [key: string]: any
+            }
+            // type =  select
+            options?: {
+                label: string
+                value: any
+            }[]
         }[]
     }[]
 }>

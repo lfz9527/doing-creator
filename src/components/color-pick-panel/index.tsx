@@ -1,6 +1,6 @@
 import {FC, useState} from 'react'
 import {Tooltip} from 'antd'
-import {SketchPicker} from '@hello-pangea/color-picker'
+import {SketchPicker, ColorResult} from '@hello-pangea/color-picker'
 import classnames from 'classnames'
 
 export type ColorPickPanelProps = {
@@ -120,7 +120,8 @@ const ColorPickPanel: FC<ColorPickPanelProps> = ({onChange}) => {
                 }}
             >
                 {colorButton('single', '单色', COLORS.single)}
-                {colorButton('multi', '渐变色', COLORS.gradient)}
+                {/* @TODO 后续可以添加渐变色 */}
+                {/* {colorButton('multi', '渐变色', COLORS.gradient)} */}
             </div>
 
             {active === 'single' && (
@@ -166,11 +167,11 @@ const ColorPickPanel: FC<ColorPickPanelProps> = ({onChange}) => {
                                 <div className='text-[#151b26] text-sm'>
                                     通用
                                 </div>
-                                <div className='flex gap-2 flex-wrap mt-2 cursor-pointer'>
-                                    {renderColor('#fff')}
+                                <div className='flex flex-wrap gap-2 mt-2 cursor-pointer'>
+                                    {renderColor('#fff','白色')}
                                     {renderColor(
                                         'transparent',
-                                        '透明-transparent'
+                                        '透明'
                                     )}
                                     {renderColor('无')}
                                 </div>
@@ -179,7 +180,7 @@ const ColorPickPanel: FC<ColorPickPanelProps> = ({onChange}) => {
                                 <div className='text-[#151b26] text-sm'>
                                     页面背景色
                                 </div>
-                                <div className='flex gap-2 flex-wrap mt-2 cursor-pointer'>
+                                <div className='flex flex-wrap gap-2 mt-2 cursor-pointer'>
                                     {renderColor('pink')}
                                     {renderColor('yellow')}
                                     {renderColor('red')}
@@ -196,7 +197,14 @@ const ColorPickPanel: FC<ColorPickPanelProps> = ({onChange}) => {
                                 'pt-[12px]'
                             )}
                         >
-                            <SketchPicker width='100%' />
+                            <SketchPicker
+                                color='#fff'
+                                onChange={(color: ColorResult) => {
+                                    const {r, g, b, a} = color.rgb
+                                    onChange(`rgba(${r}, ${g}, ${b}, ${a})`)
+                                }}
+                                width='100%'
+                            />
                         </div>
                     )}
                 </>
@@ -210,7 +218,7 @@ const ColorPickPanel: FC<ColorPickPanelProps> = ({onChange}) => {
                         'pt-[12px]'
                     )}
                 >
-                    <SketchPicker  width='100%' />
+                    <SketchPicker width='100%' />
                 </div>
             )}
         </div>

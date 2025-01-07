@@ -15,7 +15,7 @@ export const initCanvas = () => {
         category: Page.category,
         props: formatProps(Page.defaultProps),
         name: 'Page',
-        isLock: true,
+        isLock: false,
         children: [],
         id: String(new Date().getTime()),
         parentId: ''

@@ -1,15 +1,18 @@
-import {useState, FC, useMemo} from 'react'
+import {useState, FC, useMemo, useEffect} from 'react'
 import classNames from 'classnames'
 import TabChildren from '../tab-children'
 import {SettingProps} from '@core/meta'
+import {useComponent} from '@/store'
 
 export type TabContentProps = {
     tabs: SettingProps
     onChange?: (key: string) => void
 }
 
-const TabContent: FC<TabContentProps> = ({tabs, onChange}) => {
-    const [activeTab, setActiveTab] = useState<string>(tabs[0].key)
+const TabContent: FC<TabContentProps> = ({tabs = [], onChange}) => {
+    const {curComponentInfo} = useComponent()
+    const [activeTab, setActiveTab] = useState<string>(tabs[0]?.key)
+    const [childContent, setChildContent] = useState<any>([])
     const getTabClass = (tab: string) =>
         classNames(
             'flex-1',
@@ -45,16 +48,26 @@ const TabContent: FC<TabContentProps> = ({tabs, onChange}) => {
         setActiveTab(active)
         onChange?.(active)
     }
+    useEffect(() => {
+        if(tabs) {
+            setActiveTab(tabs[0]?.key)
+        }
+        console.log('tabs',tabs);
+        
+    }, [tabs])
 
-    const curTabChildrenContent = useMemo(()=>{
+    useEffect(() => {
         const curTab = tabs.find((tab) => tab.key === activeTab)
-        return curTab?.children || []
-    },[activeTab])
+        setChildContent(()=> curTab?.children || [])
+    }, [activeTab,curComponentInfo.id])
+
+
+    const curTabs = useMemo(() => tabs, [tabs, curComponentInfo.id])
 
     return (
         <>
             <div className='flex border-b-[1px] border-solid border-[#dcdee3] '>
-                {tabs.map((tab) => {
+                {curTabs.map((tab) => {
                     return (
                         <div
                             key={tab.key}
@@ -66,7 +79,7 @@ const TabContent: FC<TabContentProps> = ({tabs, onChange}) => {
                     )
                 })}
             </div>
-            <TabChildren childContent={curTabChildrenContent} />
+            <TabChildren childContent={childContent} />
         </>
     )
 }

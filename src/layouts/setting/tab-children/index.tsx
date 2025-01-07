@@ -3,8 +3,10 @@ import classNames from 'classnames'
 import {RightOutlined} from '@ant-design/icons'
 import {SettingProps} from '@core/meta'
 import {useComponent} from '@/store'
-import {Popover} from 'antd'
-import ColorPickPanel from '@/components/color-pick-panel'
+
+import ColorContent from './color-content'
+import SelectContent from './select-content'
+import InputContent from './input-content'
 
 type TabChildrenProps = {
     childContent: SettingProps[number]['children']
@@ -12,14 +14,23 @@ type TabChildrenProps = {
 
 const TabChildren: FC<TabChildrenProps> = ({childContent}) => {
     const [activeTabs, setActiveTabs] = useState<string[]>([])
-    const {curComponentInfo, findCurrentComponentById} = useComponent()
+    // 重置回调
+    const [resetCallback, setResetCallback] = useState<Map<string, () => void>>(
+        new Map()
+    )
+    const {curComponentInfo, findCurrentComponentById, updateComponent} =
+        useComponent()
     const {id} = curComponentInfo
 
     const componentProps = useMemo(() => {
         return findCurrentComponentById(id)?.props || {}
     }, [id])
 
-    console.log(componentProps)
+    useEffect(() => {
+        setActiveTabs(childContent.map((item) => item.key))
+    }, [childContent, id])
+
+    const curChildContent = useMemo(() => childContent, [childContent, id])
 
     const arrowClass = (key: string) => {
         return classNames(
@@ -46,10 +57,6 @@ const TabChildren: FC<TabChildrenProps> = ({childContent}) => {
         )
     }
 
-    useEffect(() => {
-        setActiveTabs(childContent.map((item) => item.key))
-    }, [childContent])
-
     const onChange = (key: string) => {
         if (activeTabs.includes(key)) {
             setActiveTabs(activeTabs.filter((item) => item !== key))
@@ -58,62 +65,25 @@ const TabChildren: FC<TabChildrenProps> = ({childContent}) => {
         }
     }
 
-    // 颜色
-    const colorContent = (item: any) => {
-        const value = componentProps[item.key] as string
+    // 重置
+    const reset = (item: any) => {
+        const callback = resetCallback.get(item.key)
 
-        const colorPanel = () =>{
-          const colorChange = () =>{
-
-          }
-
-
-          return <ColorPickPanel onChange={colorChange}/>
+        if (callback) {
+            callback()
+        } else {
+            updateComponent(id, {
+                [item.key]: item.defaultValue
+            })
         }
-
-        return (
-            <div>
-                <div className='flex items-center'>
-                    <Popover content={colorPanel()} trigger="click" placement="leftTop">
-                        {!value ? (
-                            <div className='border-[1px] border-[#e5e5e5] border-solid p-1 rounded-md hover:border-[#4096ff] cursor-pointer'>
-                                <div className='w-[20px] h-[20px] rounded-md bg-white relative overflow-hidden'>
-                                    <div className='absolute w-[35px] h-[2px] bg-[#ff0000] rotate-45 top-[11px] left-[-5px]' />
-                                </div>
-                            </div>
-                        ) : (
-                            <div className='flex gap-1 items-center border-[1px] border-[#e5e5e5] border-solid p-1 rounded-md hover:border-[#4096ff] cursor-pointer'>
-                                <div
-                                    className='w-[20px] h-[20px] rounded-md'
-                                    style={{
-                                        boxShadow:
-                                            'inset 0 0 1px 0 rgba(0,0,0,0.25)',
-                                        backgroundImage:
-                                            'conic-gradient(rgba(0,0,0,0.06) 0 25%, transparent 0 50%, rgba(0,0,0,0.06) 0 75%, transparent 0)',
-                                        backgroundSize: '50% 50%'
-                                    }}
-                                >
-                                    <div
-                                        style={{
-                                            width: '100%',
-                                            height: '100%',
-                                            backgroundColor: value,
-                                            boxShadow:
-                                                'inset 0 0 0 1px rgba(0,0,0,0.06)',
-                                            borderRadius: 'inherit'
-                                        }}
-                                    ></div>
-                                </div>
-                                <div>{value}</div>
-                            </div>
-                        )}
-                    </Popover>
-                </div>
-            </div>
-        )
     }
 
-    return childContent.map((child, index) => (
+    // 添加重置回调
+    const addResetCallback = (key: string, callback: () => void) => {
+        setResetCallback((prev) => new Map(prev).set(key, callback))
+    }
+
+    return curChildContent.map((child, index) => (
         <div key={child.key + index} className='collapse-item'>
             <div
                 className='flex justify-between items-center px-4 py-2 bg-[#f2f2f4] border-t-[1px] border-[#e5e5e5] cursor-pointer'
@@ -123,13 +93,44 @@ const TabChildren: FC<TabChildrenProps> = ({childContent}) => {
                 <RightOutlined className={arrowClass(child.key)} />
             </div>
             <div className={bodyClass(child.key)}>
-                <div className='body p-3'>
+                <div className='p-3 body'>
                     {child.props?.map((item, index) => (
                         <div key={item.key + index} className='mb-3'>
-                            <div className='mb-2 text-[#5c5f66]'>
-                                {item.label}
+                            <div className='flex justify-between mb-2 text-[#5c5f66]'>
+                                <div>{item.label}</div>
+                                <div
+                                    className='cursor-pointer hover:text-[#4096ff]'
+                                    onClick={() => reset(item)}
+                                >
+                                    重置
+                                </div>
                             </div>
-                            {item.type === 'color' && colorContent(item)}
+                            {item.type === 'color' && (
+                                <ColorContent
+                                    item={item}
+                                    id={id}
+                                    componentProps={componentProps}
+                                    addResetCallback={addResetCallback}
+                                />
+                            )}
+                            {item.type === 'select' && (
+                                <SelectContent
+                                    item={item}
+                                    id={id}
+                                    componentProps={componentProps}
+                                    addResetCallback={addResetCallback}
+                                />
+                            )}
+
+                            {(item.type === 'string' ||
+                                item.type === 'number') && (
+                                <InputContent
+                                    item={item}
+                                    id={id}
+                                    componentProps={componentProps}
+                                    addResetCallback={addResetCallback}
+                                />
+                            )}
                         </div>
                     ))}
                 </div>

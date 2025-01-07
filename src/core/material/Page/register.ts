@@ -34,6 +34,7 @@ export default (ctx: MaterialContext) => {
                                 label: '背景色',
                                 key: 'backgroundColor',
                                 type: 'color',
+                                defaultValue: '#fff',
                             },
                         ]
                     },

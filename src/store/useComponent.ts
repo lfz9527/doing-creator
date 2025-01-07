@@ -1,6 +1,6 @@
 // 组件
 import {create} from 'zustand'
-import {ComponentNode} from '@core/meta'
+import {ComponentNode, ComponentNodePropType} from '@core/meta'
 import {findNodeAndParent} from '@/utils'
 
 type componentsInfo = {
@@ -88,6 +88,18 @@ type Action = {
      * @returns
      */
     findCurrentComponentById: (id: string) => ComponentNode | null
+    /**
+     * 更新组件
+     * @param component 组件
+     * @returns
+     *
+     */
+    updateComponent: (
+        id: string,
+        data: {
+            [propName: string]: ComponentNodePropType
+        }
+    ) => void
 }
 
 const useMaterial = create<componentsInfo & Action>((set, get) => ({
@@ -106,6 +118,18 @@ const useMaterial = create<componentsInfo & Action>((set, get) => ({
         set({
             canvasComponent: component,
             components: []
+        })
+    },
+    updateComponent: (id,data) => {
+        set((state) => {
+            const {component} = findNodeAndParent(id, state.components)
+            if (component) {
+                component.props = {
+                    ...component.props,
+                   ...data
+                }
+            }
+            return {components: [...state.components]}
         })
     },
     findCurrentComponentById: (id) => {
@@ -210,12 +234,12 @@ const useMaterial = create<componentsInfo & Action>((set, get) => ({
                 state.components.push(curComponent!)
             } else {
                 const {
-                    component: targetComponent,
+                    component: targetComponent
                     // parentComponent: targetComponentParent
                 } = findNodeAndParent(targetId, state.components)
 
                 // 移动到目标组件下
-                if (!targetComponent?.children){
+                if (!targetComponent?.children) {
                     targetComponent.children = []
                 }
                 targetComponent.children.push(curComponent!)
